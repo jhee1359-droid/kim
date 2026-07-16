@@ -1,4 +1,4 @@
-param([string]$InputPath)
+﻿param([string]$InputPath)
 
 # =====================================================================
 #  상권별 엑셀 분리 스크립트 (Excel COM 사용)
@@ -8,7 +8,6 @@ param([string]$InputPath)
 # =====================================================================
 
 $ErrorActionPreference = 'Stop'
-try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch {}
 
 # 상권구분이 들어있는 열 번호 (A=1, B=2, C=3 ...)
 $keyCol   = 3

@@ -1,0 +1,449 @@
+<title>수원지역부 주간 영업지표 대시보드</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --bg:#eef2ee; --surface:#ffffff; --surface-2:#f6f9f6; --ink:#18211c; --muted:#65726b;
+  --line:#dde5df; --accent:#1a9c4b; --accent-dark:#15773a; --accent-soft:#e7f4ec;
+  --good:#1a9c4b; --good-soft:#e7f4ec; --warn:#c98a08; --warn-soft:#fbf1da;
+  --bad:#d1453f; --bad-soft:#fbe7e6; --shadow:0 1px 3px rgba(20,50,30,.08),0 8px 24px rgba(20,50,30,.06);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#111713; --surface:#19211c; --surface-2:#141b17; --ink:#e7efe9; --muted:#93a099;
+    --line:#28322c; --accent:#39c56f; --accent-dark:#2ba75d; --accent-soft:#16261c;
+    --good:#39c56f; --good-soft:#16261c; --warn:#e0b040; --warn-soft:#2a2413;
+    --bad:#e8635d; --bad-soft:#2c1817; --shadow:0 1px 3px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="light"]{
+  --bg:#eef2ee; --surface:#ffffff; --surface-2:#f6f9f6; --ink:#18211c; --muted:#65726b;
+  --line:#dde5df; --accent:#1a9c4b; --accent-dark:#15773a; --accent-soft:#e7f4ec;
+  --good:#1a9c4b; --good-soft:#e7f4ec; --warn:#c98a08; --warn-soft:#fbf1da;
+  --bad:#d1453f; --bad-soft:#fbe7e6; --shadow:0 1px 3px rgba(20,50,30,.08),0 8px 24px rgba(20,50,30,.06);
+}
+:root[data-theme="dark"]{
+  --bg:#111713; --surface:#19211c; --surface-2:#141b17; --ink:#e7efe9; --muted:#93a099;
+  --line:#28322c; --accent:#39c56f; --accent-dark:#2ba75d; --accent-soft:#16261c;
+  --good:#39c56f; --good-soft:#16261c; --warn:#e0b040; --warn-soft:#2a2413;
+  --bad:#e8635d; --bad-soft:#2c1817; --shadow:0 1px 3px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:"Pretendard","Malgun Gothic","맑은 고딕","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.5;
+  -webkit-font-smoothing:antialiased; font-feature-settings:"tnum";
+}
+.wrap{max-width:1180px; margin:0 auto; padding:22px 20px 60px;}
+.tnum{font-variant-numeric:tabular-nums;}
+
+/* header */
+.top{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:6px;}
+.brand h1{font-size:23px; font-weight:800; letter-spacing:-.6px; line-height:1.15;}
+.brand .sub{color:var(--muted); font-size:13px; margin-top:4px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+.pill{display:inline-flex; align-items:center; gap:5px; background:var(--accent-soft); color:var(--accent-dark);
+  font-weight:700; font-size:12px; padding:3px 10px; border-radius:999px; border:1px solid transparent;}
+.tools{display:flex; gap:7px; flex-wrap:wrap;}
+.btn{font:inherit; font-size:12.5px; font-weight:600; color:var(--ink); background:var(--surface);
+  border:1px solid var(--line); border-radius:9px; padding:7px 12px; cursor:pointer; display:inline-flex; gap:6px; align-items:center;
+  transition:.15s;}
+.btn:hover{border-color:var(--accent); color:var(--accent-dark);}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:#fff;}
+.btn.primary:hover{background:var(--accent-dark); color:#fff;}
+.btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+.divider{height:3px; background:linear-gradient(90deg,var(--accent),transparent 62%); border-radius:2px; margin:12px 0 20px;}
+
+/* section */
+.sec-h{display:flex; align-items:baseline; gap:10px; margin:26px 2px 12px;}
+.sec-h .n{font-size:12px; font-weight:800; color:#fff; background:var(--accent-dark); width:22px;height:22px;border-radius:6px;
+  display:inline-flex;align-items:center;justify-content:center; flex:none;}
+.sec-h h2{font-size:16px; font-weight:800; letter-spacing:-.3px;}
+.sec-h .hint{font-size:12px; color:var(--muted); margin-left:auto;}
+
+/* KPI grid */
+.kgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(215px,1fr)); gap:12px;}
+.kpi{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 15px 12px;
+  box-shadow:var(--shadow); position:relative; overflow:hidden;}
+.kpi::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--st,var(--accent));}
+.kpi .kh{display:flex; justify-content:space-between; align-items:center; gap:8px;}
+.kpi .knm{font-size:12.5px; font-weight:700; color:var(--muted);}
+.stat{font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:999px; white-space:nowrap;}
+.stat.good{background:var(--good-soft); color:var(--good);}
+.stat.warn{background:var(--warn-soft); color:var(--warn);}
+.stat.bad{background:var(--bad-soft); color:var(--bad);}
+.kpi .val{font-size:26px; font-weight:800; letter-spacing:-.5px; margin:7px 0 1px; line-height:1;}
+.kpi .val small{font-size:13px; font-weight:700; color:var(--muted); margin-left:2px;}
+.kpi .meta{display:flex; gap:12px; font-size:11.5px; color:var(--muted); margin-top:3px;}
+.kpi .meta b{color:var(--ink); font-weight:700;}
+.kpi .yoy.up{color:var(--good);} .kpi .yoy.down{color:var(--bad);}
+.spark{margin-top:9px;}
+.spark svg{display:block; width:100%; height:34px;}
+.spark .lab{display:flex; justify-content:space-between; font-size:9.5px; color:var(--muted); margin-top:2px;}
+
+/* table */
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); overflow:hidden;}
+.tblscroll{overflow-x:auto;}
+table{width:100%; border-collapse:collapse; font-size:12.5px;}
+th,td{padding:8px 10px; text-align:center; border-bottom:1px solid var(--line); white-space:nowrap;}
+thead th{background:var(--surface-2); font-weight:700; color:var(--muted); font-size:11.5px; position:sticky; top:0;}
+tbody td:first-child, tbody th:first-child{text-align:left; font-weight:700; background:var(--surface-2);}
+tbody tr:hover td{background:var(--accent-soft);}
+tr.sum td, tr.sum th{background:var(--accent-soft); font-weight:800; color:var(--accent-dark);}
+tr.sum:hover td{background:var(--accent-soft);}
+.cell-new{color:var(--accent-dark); font-weight:800;}
+.heat{border-radius:6px; padding:2px 0; font-weight:700;}
+
+/* highlight cards (점두 효과) */
+.hl{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px;}
+.hlc{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:12px 14px; box-shadow:var(--shadow);}
+.hlc .v{font-size:22px; font-weight:800; color:var(--accent-dark); letter-spacing:-.5px;}
+.hlc .v span{font-size:12px; color:var(--bad); font-weight:800; margin-left:3px;}
+.hlc .l{font-size:11.5px; color:var(--muted); margin-top:3px;}
+
+.note{font-size:11px; color:var(--muted); margin:8px 2px 0; line-height:1.5;}
+
+/* edit panel */
+.editwrap{position:fixed; inset:0; background:rgba(10,20,14,.45); display:none; align-items:flex-start; justify-content:center;
+  padding:26px 16px; z-index:50; overflow:auto;}
+.editwrap.open{display:flex;}
+.editcard{background:var(--surface); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow);
+  width:min(680px,100%); padding:20px 22px;}
+.editcard h3{font-size:16px; font-weight:800; margin-bottom:3px;}
+.editcard .desc{font-size:12px; color:var(--muted); margin-bottom:14px;}
+.efield{display:grid; grid-template-columns:1fr 92px 92px; gap:8px; align-items:center; padding:7px 0; border-bottom:1px dashed var(--line);}
+.efield .en{font-size:12.5px; font-weight:600;}
+.efield .eu{font-size:10.5px; color:var(--muted); font-weight:500;}
+.efield input{font:inherit; font-size:13px; text-align:right; padding:6px 8px; border:1px solid var(--line);
+  border-radius:8px; background:var(--surface-2); color:var(--ink); width:100%;}
+.efield input:focus{outline:2px solid var(--accent); outline-offset:0; border-color:var(--accent);}
+.ehdr{display:grid; grid-template-columns:1fr 92px 92px; gap:8px; font-size:10.5px; color:var(--muted); font-weight:700; padding-bottom:4px;}
+.ehdr div:not(:first-child){text-align:right;}
+.erow-week{display:flex; gap:8px; align-items:center; margin:2px 0 14px;}
+.erow-week input{font:inherit; font-size:13px; padding:6px 10px; border:1px solid var(--line); border-radius:8px;
+  background:var(--surface-2); color:var(--ink); flex:1;}
+.eactions{display:flex; gap:8px; justify-content:flex-end; margin-top:16px; flex-wrap:wrap;}
+.eactions .spacer{flex:1;}
+
+.foot{margin-top:34px; padding-top:14px; border-top:1px solid var(--line); font-size:11px; color:var(--muted);
+  display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+
+@media print{
+  body{background:#fff;}
+  .tools,.editwrap{display:none !important;}
+  .kpi,.panel,.hlc{box-shadow:none;}
+  .wrap{max-width:none;padding:0;}
+}
+@media (max-width:560px){
+  .kpi .val{font-size:23px;}
+  .brand h1{font-size:19px;}
+}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <h1>수원지역부 주간 영업지표 대시보드</h1>
+      <div class="sub">
+        <span class="pill" id="pill-week">📅 —</span>
+        <span id="sub-meta">2권역 · 수원지역부</span>
+      </div>
+    </div>
+    <div class="tools">
+      <button class="btn primary" id="btn-edit">✏️ 이번 주 입력</button>
+      <button class="btn" id="btn-print">🖨️ 인쇄/PDF</button>
+      <button class="btn" id="btn-export">⬇️ 저장(JSON)</button>
+      <button class="btn" id="btn-import">⬆️ 불러오기</button>
+      <button class="btn" id="btn-theme" title="테마 전환">🌗</button>
+      <input type="file" id="file-import" accept="application/json" hidden>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- 핵심 지표 -->
+  <div class="sec-h"><span class="n">1</span><h2>핵심 지표 한눈에</h2>
+    <span class="hint">목표·전년 대비 색상 자동 · 막대=주차 추이</span></div>
+  <div class="kgrid" id="kpi-grid"></div>
+  <div class="note" id="kpi-note"></div>
+
+  <!-- 팀별 진열점 -->
+  <div class="sec-h"><span class="n">2</span><h2>팀별 진열점 현황</h2>
+    <span class="hint">연장진열대는 상반기(~6월)/7월 신규 분리</span></div>
+  <div class="panel"><div class="tblscroll"><table id="team-table"></table></div></div>
+  <div class="note">※ 연장진열대 : 설치일자 기준 재집계(상반기 75 + 7월 신규 4 = 79). 주먹밥·헬시플레저·아크릴은 하반기 진행점(목표), 라심발리는 완료+하반기 교체.</div>
+
+  <!-- 점두진열 효과 -->
+  <div class="sec-h"><span class="n">3</span><h2>점두진열 효과성 (7월)</h2>
+    <span class="hint">진열점 94점 vs 미진열점 726점, 전년 동일점</span></div>
+  <div class="hl" id="hl-grid"></div>
+  <div class="note">※ 점두진열 상품 매출 전년비 2.1배(210%), 미진열점(114.9%) 대비 초과분 +95.6%p. 동일점 94점 중 78점(83%)이 점두상품 매출 성장.</div>
+
+  <div class="foot">
+    <span id="foot-left">데이터 기준 — 편집한 값은 이 브라우저에 자동 저장됩니다.</span>
+    <span>수원지역부 · 영업개발부문</span>
+  </div>
+</div>
+
+<!-- 편집 모달 -->
+<div class="editwrap" id="editwrap">
+  <div class="editcard">
+    <h3>이번 주 지표 입력</h3>
+    <div class="desc">이번 주 마감 숫자만 넣고 <b>적용</b>을 누르면 카드·색상·추이가 자동으로 갱신됩니다.</div>
+    <div class="erow-week">
+      <label style="font-size:12.5px;font-weight:700;white-space:nowrap;">기준 주차</label>
+      <input id="in-week" placeholder="예) 7월 3주">
+    </div>
+    <div class="ehdr"><div>지표</div><div>이번 주 실적</div><div>전년비(%)</div></div>
+    <div id="edit-fields"></div>
+    <div class="eactions">
+      <button class="btn" id="btn-reset" title="기본 데이터로 되돌리기">↺ 초기화</button>
+      <span class="spacer"></span>
+      <button class="btn" id="btn-cancel">취소</button>
+      <button class="btn primary" id="btn-apply">적용</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   ▼▼▼  데이터 (매주 갱신하는 곳) — 화면 우측 상단 "이번 주 입력"으로도 수정 가능  ▼▼▼
+   weeks : 주차별 실적 배열(맨 뒤가 최신). yoy : 전년비(%).
+   goal  : 목표(없으면 null). higherBetter : 높을수록 좋은 지표인지.
+   status는 목표(있으면)·전년비로 자동 계산됩니다.
+   ============================================================ */
+const DEFAULT_DATA = {
+  meta:{ region:"2권역 · 수원지역부", week:"7월 3주", asof:"07.19 마감" },
+  kpis:[
+    {key:"stock", name:"일반상품 재고", unit:"천원", goal:20942, prev:19945, yoy:102.5, higherBetter:true,
+      weeks:[["7월1주",20788],["7월2주",20422],["7월3주",20506]]},
+    {key:"conv",  name:"간편식사 일매출", unit:"원", goal:100846, prev:96044, yoy:100.5, higherBetter:true,
+      weeks:[["7월1주",97965],["7월2주",95640],["7월3주",94598]]},
+    {key:"order", name:"간편식사 발주", unit:"", goal:42.5, prev:40.5, yoy:101.1, higherBetter:true,
+      weeks:[["7월1주",40.5],["7월2주",39.8],["7월3주",39.4]]},
+    {key:"cups",  name:"GET커피 잔수", unit:"잔", goal:9, prev:6.3, yoy:120.2, higherBetter:true,
+      weeks:[["7월2주",7.1],["7월3주",6.9]]},
+    {key:"coffee",name:"GET커피 일매출", unit:"원", goal:7000, prev:4785, yoy:119.2, higherBetter:true,
+      weeks:[["7월2주",5943],["7월3주",5751]]},
+    {key:"fry",   name:"후라이드 가동률", unit:"%", goal:null, prev:null, yoy:102.8, higherBetter:true,
+      weeks:[["7월2주",65.1],["7월3주",63.9]]},
+    {key:"potato",name:"고구마 가동률", unit:"%", goal:null, prev:null, yoy:164.9, higherBetter:true,
+      weeks:[["7월2주",44.3],["7월3주",40.4]]},
+  ],
+  teams:["1팀","2팀","3팀","4팀","5팀","6팀","7팀","8팀","9팀"],
+  team:{
+    ext_h1:[14,8,3,6,5,9,11,11,8],   // 연장진열대 상반기(~6월)
+    ext_jul:[0,1,1,0,1,0,0,0,1],     // 연장진열대 7월 신규
+    dodu:[12,18,6,13,14,9,16,6,11],  // 점두진열 7월 진열점
+    rice:[14,13,9,10,12,13,6,1,9],   // 주먹밥+음료 진행점
+    sand:[14,18,6,10,12,10,6,9,12],  // 헬시플레저 샌드위치
+    acryl:[18,22,25,14,13,13,13,16,13], // 간편식사 아크릴 진열대
+    lasim_done:[5,8,6,5,2,5,10,10,8],   // 라심발리 완료
+    lasim_h2:[1,1,4,0,0,1,2,2,1],        // 라심발리 하반기 교체
+  },
+  highlights:[
+    {v:"106.9%", d:"+4.5%p", l:"전체 일매출 전년비 (미진열 대비)"},
+    {v:"2.1배",  d:"+95.6%p", l:"점두진열상품 매출 전년비"},
+    {v:"178%",   d:"+62.8%p", l:"점두진열상품 매출이익 전년비"},
+    {v:"83.0%",  d:"", l:"동일점 94점 중 78점 매출 성장"},
+  ],
+};
+
+/* ---------- 상태/저장 ---------- */
+const LS_KEY = "suwon-kpi-dashboard-v1";
+let DATA = load();
+
+function load(){
+  try{ const s = localStorage.getItem(LS_KEY); if(s) return JSON.parse(s); }catch(e){}
+  return structuredClone(DEFAULT_DATA);
+}
+function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(DATA)); }catch(e){} }
+
+/* ---------- 숫자 포맷 ---------- */
+function fmt(n){
+  if(n===null||n===undefined||n==="") return "—";
+  return (typeof n==="number") ? n.toLocaleString("ko-KR",{maximumFractionDigits:1}) : n;
+}
+
+/* ---------- 상태 계산 ---------- */
+function statusOf(k){
+  const latest = k.weeks.length ? k.weeks[k.weeks.length-1][1] : null;
+  let ratio=null, basis="";
+  if(k.goal!=null && latest!=null){ ratio = latest/k.goal*100; basis="목표대비"; }
+  else if(k.yoy!=null){ ratio = k.yoy; basis="전년비"; }
+  if(ratio==null) return {cls:"warn", label:"—", ratio:null};
+  let cls = ratio>=100 ? "good" : (ratio>=95 ? "warn" : "bad");
+  const label = (basis==="목표대비"?"목표 ":"전년 ") + ratio.toFixed(0) + "%";
+  return {cls, label, ratio, basis};
+}
+const STC = {good:"var(--good)", warn:"var(--warn)", bad:"var(--bad)"};
+
+/* ---------- 스파크라인(막대) ---------- */
+function sparkBars(weeks, cls){
+  if(!weeks.length) return "";
+  const vals = weeks.map(w=>w[1]);
+  const min = Math.min(...vals), max = Math.max(...vals);
+  const range = (max-min)||1;
+  const n = vals.length, gap=6, w=100/n;
+  let bars="";
+  vals.forEach((v,i)=>{
+    const h = 20 + (v-min)/range*74;           // 20~94 (%)
+    const x = i*w + gap/2, bw = w-gap;
+    const last = i===n-1;
+    bars += `<rect x="${x}%" y="${100-h}%" width="${bw}%" height="${h}%" rx="2"
+              fill="${last?STC[cls]:'var(--line)'}" opacity="${last?1:.9}"></rect>`;
+  });
+  return `<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${bars}</svg>`;
+}
+
+/* ---------- 렌더 : KPI ---------- */
+function renderKPIs(){
+  const grid = document.getElementById("kpi-grid");
+  grid.innerHTML = DATA.kpis.map(k=>{
+    const st = statusOf(k);
+    const latest = k.weeks.length ? k.weeks[k.weeks.length-1] : ["",null];
+    const goalTxt = k.goal!=null ? `목표 <b>${fmt(k.goal)}</b>` : `목표 <b>—</b>`;
+    const yoyCls = k.yoy>=100 ? "up" : "down";
+    const first = k.weeks.length?k.weeks[0][0]:"", lastw = latest[0];
+    return `
+    <div class="kpi" style="--st:${STC[st.cls]}">
+      <div class="kh">
+        <span class="knm">${k.name}</span>
+        <span class="stat ${st.cls}">${st.label}</span>
+      </div>
+      <div class="val tnum">${fmt(latest[1])}<small>${k.unit}</small></div>
+      <div class="meta">
+        <span class="tnum">${goalTxt}</span>
+        <span class="yoy ${yoyCls} tnum">전년비 <b>${k.yoy!=null?k.yoy+"%":"—"}</b></span>
+      </div>
+      <div class="spark">
+        ${sparkBars(k.weeks, st.cls)}
+        <div class="lab"><span>${first}</span><span>${lastw}</span></div>
+      </div>
+    </div>`;
+  }).join("");
+  document.getElementById("kpi-note").innerHTML =
+    "※ 색상 : <b style='color:var(--good)'>달성/전년↑</b> · <b style='color:var(--warn)'>주의(95~100%)</b> · "+
+    "<b style='color:var(--bad)'>미달(&lt;95%)</b>. 목표가 없는 가동률은 전년비로 판정.";
+}
+
+/* ---------- 렌더 : 팀 매트릭스 ---------- */
+function renderTeam(){
+  const t = DATA.team, teams = DATA.teams;
+  const sum = a => a.reduce((x,y)=>x+y,0);
+  const cols = [
+    {h:"연장진열대<br><span style='font-weight:500;color:var(--muted)'>상반기</span>", get:i=>t.ext_h1[i]},
+    {h:"연장 7월<br><span style='font-weight:500;color:var(--muted)'>신규</span>", get:i=>t.ext_jul[i], hot:true},
+    {h:"연장<br><span style='font-weight:500;color:var(--muted)'>누계</span>", get:i=>t.ext_h1[i]+t.ext_jul[i]},
+    {h:"점두진열<br><span style='font-weight:500;color:var(--muted)'>7월 진열점</span>", get:i=>t.dodu[i]},
+    {h:"주먹밥<br><span style='font-weight:500;color:var(--muted)'>진행점</span>", get:i=>t.rice[i]},
+    {h:"헬시플레저<br><span style='font-weight:500;color:var(--muted)'>진행점</span>", get:i=>t.sand[i]},
+    {h:"아크릴<br><span style='font-weight:500;color:var(--muted)'>진행점</span>", get:i=>t.acryl[i]},
+    {h:"라심발리<br><span style='font-weight:500;color:var(--muted)'>완료+하반기</span>", get:i=>t.lasim_done[i]+t.lasim_h2[i]},
+  ];
+  let head = "<thead><tr><th>팀</th>"+cols.map(c=>`<th>${c.h}</th>`).join("")+"</tr></thead>";
+  let body = "<tbody>";
+  body += `<tr class="sum"><th>수원지역부</th>`+
+    cols.map(c=>{ const s=sum(teams.map((_,i)=>c.get(i)));
+      return `<td class="${c.hot?'cell-new':''}">${c.hot&&s>0?'+':''}${s}</td>`; }).join("")+`</tr>`;
+  teams.forEach((tm,i)=>{
+    body += `<tr><th>수원${tm}</th>`+
+      cols.map(c=>{ const v=c.get(i);
+        return `<td class="tnum ${c.hot&&v>0?'cell-new':''}">${c.hot&&v>0?'+':''}${v}</td>`; }).join("")+`</tr>`;
+  });
+  body += "</tbody>";
+  document.getElementById("team-table").innerHTML = head+body;
+}
+
+/* ---------- 렌더 : 하이라이트 ---------- */
+function renderHL(){
+  document.getElementById("hl-grid").innerHTML = DATA.highlights.map(h=>`
+    <div class="hlc"><div class="v tnum">${h.v}${h.d?`<span>${h.d}</span>`:""}</div>
+    <div class="l">${h.l}</div></div>`).join("");
+}
+
+/* ---------- 렌더 : 헤더 ---------- */
+function renderHeader(){
+  document.getElementById("pill-week").textContent = "📅 "+DATA.meta.week+" ("+DATA.meta.asof+")";
+  document.getElementById("sub-meta").textContent = DATA.meta.region;
+}
+
+function renderAll(){ renderHeader(); renderKPIs(); renderTeam(); renderHL(); }
+renderAll();
+
+/* ============================================================
+   편집 모달
+   ============================================================ */
+const editwrap = document.getElementById("editwrap");
+function openEdit(){
+  document.getElementById("in-week").value = DATA.meta.week;
+  const wrap = document.getElementById("edit-fields");
+  wrap.innerHTML = DATA.kpis.map((k,idx)=>{
+    const latest = k.weeks.length? k.weeks[k.weeks.length-1][1] : "";
+    return `<div class="efield">
+      <div><span class="en">${k.name}</span> <span class="eu">${k.unit||""}</span></div>
+      <input type="number" step="any" data-i="${idx}" data-f="val" value="${latest}">
+      <input type="number" step="any" data-i="${idx}" data-f="yoy" value="${k.yoy??""}">
+    </div>`;
+  }).join("");
+  editwrap.classList.add("open");
+}
+function closeEdit(){ editwrap.classList.remove("open"); }
+
+function applyEdit(){
+  const wk = document.getElementById("in-week").value.trim() || DATA.meta.week;
+  DATA.meta.week = wk;
+  document.querySelectorAll("#edit-fields input").forEach(inp=>{
+    const i=+inp.dataset.i, f=inp.dataset.f, raw=inp.value.trim();
+    if(raw==="") return;
+    const v = parseFloat(raw);
+    const k = DATA.kpis[i];
+    if(f==="yoy"){ k.yoy = v; }
+    else if(f==="val"){
+      // 마지막 주차 라벨이 이번 주차와 같으면 갱신, 아니면 새 주차 추가
+      const last = k.weeks[k.weeks.length-1];
+      if(last && last[0]===wk){ last[1]=v; }
+      else { k.weeks.push([wk, v]); if(k.weeks.length>6) k.weeks.shift(); }
+    }
+  });
+  save(); renderAll(); closeEdit();
+}
+
+document.getElementById("btn-edit").onclick = openEdit;
+document.getElementById("btn-cancel").onclick = closeEdit;
+document.getElementById("btn-apply").onclick = applyEdit;
+editwrap.onclick = e=>{ if(e.target===editwrap) closeEdit(); };
+document.getElementById("btn-reset").onclick = ()=>{
+  if(confirm("기본 데이터로 되돌릴까요? 입력한 값이 사라집니다.")){
+    DATA = structuredClone(DEFAULT_DATA); save(); renderAll(); closeEdit();
+  }
+};
+
+/* ---------- 인쇄 ---------- */
+document.getElementById("btn-print").onclick = ()=>window.print();
+
+/* ---------- JSON 내보내기/가져오기 ---------- */
+document.getElementById("btn-export").onclick = ()=>{
+  const blob = new Blob([JSON.stringify(DATA,null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download = "수원지역부_지표_"+DATA.meta.week.replace(/\s/g,"")+".json"; a.click();
+  URL.revokeObjectURL(a.href);
+};
+document.getElementById("btn-import").onclick = ()=>document.getElementById("file-import").click();
+document.getElementById("file-import").onchange = e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload = ()=>{ try{ DATA=JSON.parse(r.result); save(); renderAll();
+    alert("불러오기 완료"); }catch(err){ alert("JSON 파일을 읽을 수 없습니다."); } };
+  r.readAsText(f); e.target.value="";
+};
+
+/* ---------- 테마 ---------- */
+document.getElementById("btn-theme").onclick = ()=>{
+  const cur = document.documentElement.getAttribute("data-theme");
+  const dark = cur ? cur==="dark" : matchMedia("(prefers-color-scheme:dark)").matches;
+  document.documentElement.setAttribute("data-theme", dark?"light":"dark");
+};
+
+/* 키보드 : Esc 닫기 */
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeEdit(); });
+</script>

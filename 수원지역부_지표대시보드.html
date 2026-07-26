@@ -159,20 +159,25 @@ tr.sum:hover td{background:var(--accent-soft);}
   </div>
   <div class="divider"></div>
 
-  <!-- 핵심 지표 -->
-  <div class="sec-h"><span class="n">1</span><h2>핵심 지표 한눈에</h2>
-    <span class="hint">목표·전년 대비 색상 자동 · 막대=주차 추이</span></div>
-  <div class="kgrid" id="kpi-grid"></div>
+  <!-- 매출·고객 지표 -->
+  <div class="sec-h"><span class="n">1</span><h2>매출·고객 지표</h2>
+    <span class="hint">목표·전년 대비 색상 자동 · 막대=추이(전년→당월 또는 주차)</span></div>
+  <div class="kgrid" id="kpi-grid-a"></div>
+
+  <!-- 운영·상품 지표 -->
+  <div class="sec-h"><span class="n">2</span><h2>운영·상품 지표</h2>
+    <span class="hint">재고·간편식·커피·즉석조리·상품운영·배달</span></div>
+  <div class="kgrid" id="kpi-grid-b"></div>
   <div class="note" id="kpi-note"></div>
 
   <!-- 팀별 진열점 -->
-  <div class="sec-h"><span class="n">2</span><h2>팀별 진열점 현황</h2>
+  <div class="sec-h"><span class="n">3</span><h2>팀별 진열점 현황</h2>
     <span class="hint">연장진열대는 상반기(~6월)/7월 신규 분리</span></div>
   <div class="panel"><div class="tblscroll"><table id="team-table"></table></div></div>
   <div class="note">※ 연장진열대 : 설치일자 기준 재집계(상반기 75 + 7월 신규 4 = 79). 주먹밥·헬시플레저·아크릴은 하반기 진행점(목표), 라심발리는 완료+하반기 교체.</div>
 
   <!-- 점두진열 효과 -->
-  <div class="sec-h"><span class="n">3</span><h2>점두진열 효과성 (7월)</h2>
+  <div class="sec-h"><span class="n">4</span><h2>점두진열 효과성 (7월)</h2>
     <span class="hint">진열점 94점 vs 미진열점 726점, 전년 동일점</span></div>
   <div class="hl" id="hl-grid"></div>
   <div class="note">※ 점두진열 상품 매출 전년비 2.1배(210%), 미진열점(114.9%) 대비 초과분 +95.6%p. 동일점 94점 중 78점(83%)이 점두상품 매출 성장.</div>
@@ -214,20 +219,37 @@ tr.sum:hover td{background:var(--accent-soft);}
 const DEFAULT_DATA = {
   meta:{ region:"2권역 · 수원지역부", week:"7월 3주", asof:"07.19 마감" },
   kpis:[
-    {key:"stock", name:"일반상품 재고", unit:"천원", goal:20942, prev:19945, yoy:102.5, higherBetter:true,
-      weeks:[["7월1주",20788],["7월2주",20422],["7월3주",20506]]},
-    {key:"conv",  name:"간편식사 일매출", unit:"원", goal:100846, prev:96044, yoy:100.5, higherBetter:true,
+    /* ── 매출·고객 (group:"a") ── roll:false = 당월 누계형(전년→당월) / true = 주차 추이형 ── */
+    {key:"sales", group:"a", name:"일반상품 일매출", unit:"천원", goal:1243, yoy:106.4, higherBetter:true, roll:false,
+      weeks:[["전년",1208],["당월",1286]]},
+    {key:"conv",  group:"a", name:"간편식사 일매출", unit:"원", goal:100846, yoy:100.5, higherBetter:true, roll:true,
       weeks:[["7월1주",97965],["7월2주",95640],["7월3주",94598]]},
-    {key:"order", name:"간편식사 발주", unit:"", goal:42.5, prev:40.5, yoy:101.1, higherBetter:true,
+    {key:"guest", group:"a", name:"객수", unit:"명", goal:null, yoy:101.5, higherBetter:true, roll:false,
+      weeks:[["전년",266],["당월",270]]},
+    {key:"price", group:"a", name:"객단가", unit:"원", goal:null, yoy:102.7, higherBetter:true, roll:false,
+      weeks:[["전년",7272],["당월",7465]]},
+    {key:"catg",  group:"a", name:"중점카테고리", unit:"원", goal:234431, yoy:106.4, higherBetter:true, roll:false,
+      weeks:[["전년",206969],["당월",220215]]},
+
+    /* ── 운영·상품 (group:"b") ── */
+    {key:"stock", group:"b", name:"일반상품 재고", unit:"천원", goal:20942, yoy:102.5, higherBetter:true, roll:true,
+      weeks:[["7월1주",20788],["7월2주",20422],["7월3주",20506]]},
+    {key:"order", group:"b", name:"간편식사 발주", unit:"", goal:42.5, yoy:101.1, higherBetter:true, roll:true,
       weeks:[["7월1주",40.5],["7월2주",39.8],["7월3주",39.4]]},
-    {key:"cups",  name:"GET커피 잔수", unit:"잔", goal:9, prev:6.3, yoy:120.2, higherBetter:true,
+    {key:"cups",  group:"b", name:"GET커피 잔수", unit:"잔", goal:9, yoy:120.2, higherBetter:true, roll:true,
       weeks:[["7월2주",7.1],["7월3주",6.9]]},
-    {key:"coffee",name:"GET커피 일매출", unit:"원", goal:7000, prev:4785, yoy:119.2, higherBetter:true,
+    {key:"coffee",group:"b", name:"GET커피 일매출", unit:"원", goal:7000, yoy:119.2, higherBetter:true, roll:true,
       weeks:[["7월2주",5943],["7월3주",5751]]},
-    {key:"fry",   name:"후라이드 가동률", unit:"%", goal:null, prev:null, yoy:102.8, higherBetter:true,
+    {key:"fry",   group:"b", name:"후라이드 가동률", unit:"%", goal:null, yoy:102.8, higherBetter:true, roll:true,
       weeks:[["7월2주",65.1],["7월3주",63.9]]},
-    {key:"potato",name:"고구마 가동률", unit:"%", goal:null, prev:null, yoy:164.9, higherBetter:true,
+    {key:"potato",group:"b", name:"고구마 가동률", unit:"%", goal:null, yoy:164.9, higherBetter:true, roll:true,
       weeks:[["7월2주",44.3],["7월3주",40.4]]},
+    {key:"best",  group:"b", name:"BEST상품 운영률", unit:"%", goal:90, yoy:null, higherBetter:true, roll:true,
+      weeks:[["7월1주",89.9],["7월2주",90.1],["7월3주",90.1]]},
+    {key:"must",  group:"b", name:"MUST HAVE 운영률", unit:"%", goal:97, yoy:null, higherBetter:true, roll:true,
+      weeks:[["7월1주",96.9],["7월2주",97.0],["7월3주",97.0]]},
+    {key:"deli",  group:"b", name:"배달 취소율(쿠팡)", unit:"%", goal:4.0, yoy:null, higherBetter:false, roll:false,
+      weeks:[["목표",4.0],["당월",3.4]]},
   ],
   teams:["1팀","2팀","3팀","4팀","5팀","6팀","7팀","8팀","9팀"],
   team:{
@@ -249,7 +271,7 @@ const DEFAULT_DATA = {
 };
 
 /* ---------- 상태/저장 ---------- */
-const LS_KEY = "suwon-kpi-dashboard-v1";
+const LS_KEY = "suwon-kpi-dashboard-v2";
 let DATA = load();
 
 function load(){
@@ -267,13 +289,18 @@ function fmt(n){
 /* ---------- 상태 계산 ---------- */
 function statusOf(k){
   const latest = k.weeks.length ? k.weeks[k.weeks.length-1][1] : null;
-  let ratio=null, basis="";
-  if(k.goal!=null && latest!=null){ ratio = latest/k.goal*100; basis="목표대비"; }
-  else if(k.yoy!=null){ ratio = k.yoy; basis="전년비"; }
-  if(ratio==null) return {cls:"warn", label:"—", ratio:null};
-  let cls = ratio>=100 ? "good" : (ratio>=95 ? "warn" : "bad");
-  const label = (basis==="목표대비"?"목표 ":"전년 ") + ratio.toFixed(0) + "%";
-  return {cls, label, ratio, basis};
+  const higher = k.higherBetter!==false;
+  if(k.goal!=null && latest!=null){
+    const ratio = latest/k.goal*100;
+    const cls = higher ? (ratio>=100?"good":ratio>=95?"warn":"bad")
+                       : (ratio<=100?"good":ratio<=105?"warn":"bad");
+    return {cls, label:"목표 "+ratio.toFixed(0)+"%", ratio};
+  }
+  if(k.yoy!=null){
+    const cls = k.yoy>=100 ? "good" : (k.yoy>=95 ? "warn" : "bad");
+    return {cls, label:"전년 "+Math.round(k.yoy)+"%", ratio:k.yoy};
+  }
+  return {cls:"warn", label:"—", ratio:null};
 }
 const STC = {good:"var(--good)", warn:"var(--warn)", bad:"var(--bad)"};
 
@@ -296,15 +323,13 @@ function sparkBars(weeks, cls){
 }
 
 /* ---------- 렌더 : KPI ---------- */
-function renderKPIs(){
-  const grid = document.getElementById("kpi-grid");
-  grid.innerHTML = DATA.kpis.map(k=>{
-    const st = statusOf(k);
-    const latest = k.weeks.length ? k.weeks[k.weeks.length-1] : ["",null];
-    const goalTxt = k.goal!=null ? `목표 <b>${fmt(k.goal)}</b>` : `목표 <b>—</b>`;
-    const yoyCls = k.yoy>=100 ? "up" : "down";
-    const first = k.weeks.length?k.weeks[0][0]:"", lastw = latest[0];
-    return `
+function kpiCard(k){
+  const st = statusOf(k);
+  const latest = k.weeks.length ? k.weeks[k.weeks.length-1] : ["",null];
+  const goalTxt = k.goal!=null ? `목표 <b>${fmt(k.goal)}</b>` : `목표 <b>—</b>`;
+  const yoyCls = (k.yoy!=null && k.yoy>=100) ? "up" : "down";
+  const first = k.weeks.length?k.weeks[0][0]:"", lastw = latest[0];
+  return `
     <div class="kpi" style="--st:${STC[st.cls]}">
       <div class="kh">
         <span class="knm">${k.name}</span>
@@ -320,10 +345,15 @@ function renderKPIs(){
         <div class="lab"><span>${first}</span><span>${lastw}</span></div>
       </div>
     </div>`;
-  }).join("");
+}
+function renderKPIs(){
+  document.getElementById("kpi-grid-a").innerHTML =
+    DATA.kpis.filter(k=>k.group==="a").map(kpiCard).join("");
+  document.getElementById("kpi-grid-b").innerHTML =
+    DATA.kpis.filter(k=>k.group!=="a").map(kpiCard).join("");
   document.getElementById("kpi-note").innerHTML =
     "※ 색상 : <b style='color:var(--good)'>달성/전년↑</b> · <b style='color:var(--warn)'>주의(95~100%)</b> · "+
-    "<b style='color:var(--bad)'>미달(&lt;95%)</b>. 목표가 없는 가동률은 전년비로 판정.";
+    "<b style='color:var(--bad)'>미달(&lt;95%)</b>. 목표 없는 지표는 전년비로 판정, 배달 취소율은 낮을수록 좋음(목표 4% 미만).";
 }
 
 /* ---------- 렌더 : 팀 매트릭스 ---------- */
@@ -399,10 +429,15 @@ function applyEdit(){
     const k = DATA.kpis[i];
     if(f==="yoy"){ k.yoy = v; }
     else if(f==="val"){
-      // 마지막 주차 라벨이 이번 주차와 같으면 갱신, 아니면 새 주차 추가
-      const last = k.weeks[k.weeks.length-1];
-      if(last && last[0]===wk){ last[1]=v; }
-      else { k.weeks.push([wk, v]); if(k.weeks.length>6) k.weeks.shift(); }
+      if(k.roll===false){
+        // 당월 누계형 : 마지막 값(당월)만 갱신
+        if(k.weeks.length) k.weeks[k.weeks.length-1][1]=v; else k.weeks=[["당월",v]];
+      } else {
+        // 주차 추이형 : 같은 주차면 갱신, 새 주차면 추가(최근 6주 유지)
+        const last = k.weeks[k.weeks.length-1];
+        if(last && last[0]===wk){ last[1]=v; }
+        else { k.weeks.push([wk, v]); if(k.weeks.length>6) k.weeks.shift(); }
+      }
     }
   });
   save(); renderAll(); closeEdit();

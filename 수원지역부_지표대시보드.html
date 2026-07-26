@@ -90,8 +90,18 @@ tbody td:first-child, tbody th:first-child{text-align:left; font-weight:700; bac
 tbody tr:hover td{background:var(--accent-soft);}
 tr.sum td, tr.sum th{background:var(--accent-soft); font-weight:800; color:var(--accent-dark);}
 tr.sum:hover td{background:var(--accent-soft);}
+tr.hl-row td, tr.hl-row th:first-child{background:var(--warn-soft) !important; box-shadow:inset 0 0 0 1.5px var(--warn);}
 .cell-new{color:var(--accent-dark); font-weight:800;}
 .heat{border-radius:6px; padding:2px 0; font-weight:700;}
+
+/* team select + team summary */
+.tsel{cursor:pointer; padding-right:8px; font-weight:700;}
+.tsel:hover{border-color:var(--accent); color:var(--accent-dark);}
+#team-summary{margin:2px 0 6px;}
+#team-summary.on{margin-bottom:16px;}
+.teamsum-h{display:flex; align-items:baseline; gap:8px; font-size:14px; font-weight:800; color:var(--accent-dark); margin:0 2px 9px;}
+.teamsum-h span{font-size:11.5px; font-weight:600; color:var(--muted);}
+.teamsum-note{font-size:11px; color:var(--muted); margin:9px 2px 0;}
 
 /* highlight cards (점두 효과) */
 .hl{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px;}
@@ -149,7 +159,9 @@ tr.sum:hover td{background:var(--accent-soft);}
       </div>
     </div>
     <div class="tools">
+      <select class="btn tsel" id="team-select" title="팀별 조회"></select>
       <button class="btn primary" id="btn-edit">✏️ 이번 주 입력</button>
+      <button class="btn" id="btn-download">📄 HTML 다운로드</button>
       <button class="btn" id="btn-print">🖨️ 인쇄/PDF</button>
       <button class="btn" id="btn-export">⬇️ 저장(JSON)</button>
       <button class="btn" id="btn-import">⬆️ 불러오기</button>
@@ -172,7 +184,8 @@ tr.sum:hover td{background:var(--accent-soft);}
 
   <!-- 팀별 진열점 -->
   <div class="sec-h"><span class="n">3</span><h2>팀별 진열점 현황</h2>
-    <span class="hint">연장진열대는 상반기(~6월)/7월 신규 분리</span></div>
+    <span class="hint">상단 <b>팀별 조회</b>에서 팀 선택 시 해당 팀 요약 표시</span></div>
+  <div id="team-summary"></div>
   <div class="panel"><div class="tblscroll"><table id="team-table"></table></div></div>
   <div class="note">※ 연장진열대 : 설치일자 기준 재집계(상반기 75 + 7월 신규 4 = 79). 주먹밥·헬시플레저·아크릴은 하반기 진행점(목표), 라심발리는 완료+하반기 교체.</div>
 
@@ -272,9 +285,12 @@ const DEFAULT_DATA = {
 
 /* ---------- 상태/저장 ---------- */
 const LS_KEY = "suwon-kpi-dashboard-v2";
+let selectedTeam = null;   // null=전체(지역부), 0~8=팀 인덱스
 let DATA = load();
 
 function load(){
+  // 다운로드된 단일 HTML은 baked-in 데이터로 먼저 열림
+  if(window.__PRELOAD_DATA__) return structuredClone(window.__PRELOAD_DATA__);
   try{ const s = localStorage.getItem(LS_KEY); if(s) return JSON.parse(s); }catch(e){}
   return structuredClone(DEFAULT_DATA);
 }
@@ -376,12 +392,38 @@ function renderTeam(){
     cols.map(c=>{ const s=sum(teams.map((_,i)=>c.get(i)));
       return `<td class="${c.hot?'cell-new':''}">${c.hot&&s>0?'+':''}${s}</td>`; }).join("")+`</tr>`;
   teams.forEach((tm,i)=>{
-    body += `<tr><th>수원${tm}</th>`+
+    const hl = (i===selectedTeam) ? ' class="hl-row"' : '';
+    body += `<tr${hl}><th>수원${tm}</th>`+
       cols.map(c=>{ const v=c.get(i);
         return `<td class="tnum ${c.hot&&v>0?'cell-new':''}">${c.hot&&v>0?'+':''}${v}</td>`; }).join("")+`</tr>`;
   });
   body += "</tbody>";
   document.getElementById("team-table").innerHTML = head+body;
+}
+
+/* ---------- 렌더 : 선택 팀 요약 ---------- */
+function renderTeamSummary(){
+  const box = document.getElementById("team-summary");
+  if(selectedTeam==null){ box.innerHTML=""; box.className=""; return; }
+  const i=selectedTeam, t=DATA.team, teams=DATA.teams;
+  const sum = a => a.reduce((x,y)=>x+y,0);
+  const items = [
+    {l:"연장진열대 누계", v:t.ext_h1[i]+t.ext_jul[i], tot:sum(teams.map((_,j)=>t.ext_h1[j]+t.ext_jul[j])), ex:(t.ext_jul[i]>0?`7월 신규 +${t.ext_jul[i]}`:"7월 신규 0")},
+    {l:"점두진열 진열점", v:t.dodu[i], tot:sum(t.dodu)},
+    {l:"주먹밥 진행점", v:t.rice[i], tot:sum(t.rice)},
+    {l:"헬시플레저 진행점", v:t.sand[i], tot:sum(t.sand)},
+    {l:"아크릴 진열대", v:t.acryl[i], tot:sum(t.acryl)},
+    {l:"라심발리(완료+하반기)", v:t.lasim_done[i]+t.lasim_h2[i], tot:sum(teams.map((_,j)=>t.lasim_done[j]+t.lasim_h2[j]))},
+  ];
+  box.className = "on";
+  box.innerHTML =
+    `<div class="teamsum-h">🧭 수원${teams[i]} 진열점 요약 <span>지역부 대비 비중</span></div>`+
+    `<div class="hl">`+ items.map(it=>{
+      const pct = it.tot ? Math.round(it.v/it.tot*100) : 0;
+      return `<div class="hlc"><div class="v tnum">${it.v}<span style="font-size:12px;color:var(--muted);font-weight:700"> 점</span></div>
+        <div class="l">${it.l}<br>지역부 ${it.tot}점 중 <b>${pct}%</b>${it.ex?` · ${it.ex}`:""}</div></div>`;
+    }).join("") +`</div>`+
+    `<div class="teamsum-note">※ 상단 매출·운영 지표(재고·간편식·커피 등)는 아직 지역부 기준입니다. 팀별 실적 데이터를 주시면 팀 단위로 바로 연결하겠습니다.</div>`;
 }
 
 /* ---------- 렌더 : 하이라이트 ---------- */
@@ -397,7 +439,15 @@ function renderHeader(){
   document.getElementById("sub-meta").textContent = DATA.meta.region;
 }
 
-function renderAll(){ renderHeader(); renderKPIs(); renderTeam(); renderHL(); }
+function renderTeamSelect(){
+  const sel = document.getElementById("team-select");
+  if(sel.options.length) return;   // 한 번만 채움
+  sel.innerHTML = `<option value="">👥 전체 (지역부)</option>`+
+    DATA.teams.map((tm,i)=>`<option value="${i}">수원${tm}</option>`).join("");
+}
+function renderAll(){
+  renderTeamSelect(); renderHeader(); renderKPIs(); renderTeam(); renderTeamSummary(); renderHL();
+}
 renderAll();
 
 /* ============================================================
@@ -453,8 +503,31 @@ document.getElementById("btn-reset").onclick = ()=>{
   }
 };
 
+/* ---------- 팀별 조회 ---------- */
+document.getElementById("team-select").onchange = e=>{
+  const v=e.target.value;
+  selectedTeam = (v==="") ? null : +v;
+  renderTeam(); renderTeamSummary();
+  if(selectedTeam!=null) document.getElementById("team-summary").scrollIntoView({behavior:"smooth",block:"center"});
+};
+
 /* ---------- 인쇄 ---------- */
 document.getElementById("btn-print").onclick = ()=>window.print();
+
+/* ---------- 단일 HTML 다운로드 (현재 데이터 baked-in) ---------- */
+document.getElementById("btn-download").onclick = ()=>{
+  const clone = document.documentElement.cloneNode(true);
+  const ew = clone.querySelector("#editwrap"); if(ew) ew.classList.remove("open");
+  const pre = document.createElement("script");
+  pre.textContent = "window.__PRELOAD_DATA__ = "+JSON.stringify(DATA)+";";
+  const target = clone.querySelector("head") || clone.querySelector("body") || clone;
+  target.insertBefore(pre, target.firstChild);
+  const html = "<!DOCTYPE html>\n<html lang=\"ko\">"+clone.innerHTML+"</html>";
+  const blob = new Blob([html],{type:"text/html;charset=utf-8"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download = "수원지역부_지표대시보드_"+DATA.meta.week.replace(/\s/g,"")+".html"; a.click();
+  URL.revokeObjectURL(a.href);
+};
 
 /* ---------- JSON 내보내기/가져오기 ---------- */
 document.getElementById("btn-export").onclick = ()=>{

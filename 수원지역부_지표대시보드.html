@@ -73,9 +73,17 @@ body{
 .stat.bad{background:var(--bad-soft); color:var(--bad);}
 .kpi .val{font-size:26px; font-weight:800; letter-spacing:-.5px; margin:7px 0 1px; line-height:1;}
 .kpi .val small{font-size:13px; font-weight:700; color:var(--muted); margin-left:2px;}
-.kpi .meta{display:flex; gap:12px; font-size:11.5px; color:var(--muted); margin-top:3px;}
-.kpi .meta b{color:var(--ink); font-weight:700;}
-.kpi .yoy.up{color:var(--good);} .kpi .yoy.down{color:var(--bad);}
+.kpi .meta{display:flex; gap:6px; flex-wrap:wrap; font-size:11px; margin-top:5px;}
+.kpi .gchip{color:var(--muted); font-weight:600; padding:2px 0;}
+.kpi .gchip b{color:var(--ink); font-weight:800;}
+.mchip{font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:6px; background:var(--surface-2); color:var(--muted);}
+.mchip b{font-weight:800;}
+.mchip.good{background:var(--good-soft); color:var(--good);}
+.mchip.warn{background:var(--warn-soft); color:var(--warn);}
+.mchip.bad{background:var(--bad-soft); color:var(--bad);}
+.banner{display:flex; gap:8px; align-items:center; background:var(--warn-soft); color:var(--warn);
+  border:1px solid transparent; border-radius:10px; padding:8px 13px; font-size:12px; font-weight:600; margin:0 0 12px;}
+.banner b{font-weight:800;}
 .spark{margin-top:9px;}
 .spark svg{display:block; width:100%; height:34px;}
 .spark .lab{display:flex; justify-content:space-between; font-size:9.5px; color:var(--muted); margin-top:2px;}
@@ -120,14 +128,16 @@ tr.hl-row td, tr.hl-row th:first-child{background:var(--warn-soft) !important; b
   width:min(680px,100%); padding:20px 22px;}
 .editcard h3{font-size:16px; font-weight:800; margin-bottom:3px;}
 .editcard .desc{font-size:12px; color:var(--muted); margin-bottom:14px;}
-.efield{display:grid; grid-template-columns:1fr 92px 92px; gap:8px; align-items:center; padding:7px 0; border-bottom:1px dashed var(--line);}
-.efield .en{font-size:12.5px; font-weight:600;}
+.efield{display:flex; flex-wrap:wrap; gap:7px 10px; align-items:flex-end; padding:9px 0; border-bottom:1px dashed var(--line);}
+.efield .ename{flex:1 1 145px; min-width:120px;}
+.efield .en{font-size:12.5px; font-weight:700;}
 .efield .eu{font-size:10.5px; color:var(--muted); font-weight:500;}
+.efield .ein{display:flex; flex-direction:column; gap:2px;}
+.efield .ein label{font-size:9.5px; color:var(--muted); font-weight:600; text-align:right;}
 .efield input{font:inherit; font-size:13px; text-align:right; padding:6px 8px; border:1px solid var(--line);
-  border-radius:8px; background:var(--surface-2); color:var(--ink); width:100%;}
+  border-radius:8px; background:var(--surface-2); color:var(--ink); width:90px;}
 .efield input:focus{outline:2px solid var(--accent); outline-offset:0; border-color:var(--accent);}
-.ehdr{display:grid; grid-template-columns:1fr 92px 92px; gap:8px; font-size:10.5px; color:var(--muted); font-weight:700; padding-bottom:4px;}
-.ehdr div:not(:first-child){text-align:right;}
+.ehint{font-size:10.5px; color:var(--muted); margin-bottom:6px;}
 .erow-week{display:flex; gap:8px; align-items:center; margin:2px 0 14px;}
 .erow-week input{font:inherit; font-size:13px; padding:6px 10px; border:1px solid var(--line); border-radius:8px;
   background:var(--surface-2); color:var(--ink); flex:1;}
@@ -171,14 +181,16 @@ tr.hl-row td, tr.hl-row th:first-child{background:var(--warn-soft) !important; b
   </div>
   <div class="divider"></div>
 
+  <div id="kpi-banner"></div>
+
   <!-- 매출·고객 지표 -->
   <div class="sec-h"><span class="n">1</span><h2>매출·고객 지표</h2>
-    <span class="hint">목표·전년 대비 색상 자동 · 막대=추이(전년→당월 또는 주차)</span></div>
+    <span class="hint">색상 자동 · 막대=추이(전년→당월 또는 주차)</span></div>
   <div class="kgrid" id="kpi-grid-a"></div>
 
-  <!-- 운영·상품 지표 -->
-  <div class="sec-h"><span class="n">2</span><h2>운영·상품 지표</h2>
-    <span class="hint">재고·간편식·커피·즉석조리·상품운영·배달</span></div>
+  <!-- 매출과정지표 -->
+  <div class="sec-h"><span class="n">2</span><h2>매출과정지표</h2>
+    <span class="hint">간편식·중점카테고리·재고·커피·즉석조리·상품운영·배달</span></div>
   <div class="kgrid" id="kpi-grid-b"></div>
   <div class="note" id="kpi-note"></div>
 
@@ -195,6 +207,10 @@ tr.hl-row td, tr.hl-row th:first-child{background:var(--warn-soft) !important; b
   <div class="hl" id="hl-grid"></div>
   <div class="note">※ 점두진열 상품 매출 전년비 2.1배(210%), 미진열점(114.9%) 대비 초과분 +95.6%p. 동일점 94점 중 78점(83%)이 점두상품 매출 성장.</div>
 
+  <h3 style="font-size:13.5px;font-weight:800;margin:16px 2px 8px;">팀별 점두진열 효과</h3>
+  <div class="panel"><div class="tblscroll"><table id="dodu-table"></table></div></div>
+  <div class="note">※ 팀별 진열점입력·점포별효과를 점포코드로 조인해 산출. 증가율=점두 소분류 매출 전년比 100% 이상 점포 비율. 전년비(전체·점두)는 팀 단위 <b>단순 집계 근사</b>로, 지역부 총계는 공식 효과분석(전체 106.9%·점두 210.5%·증가율 83.0%) 기준입니다.</div>
+
   <div class="foot">
     <span id="foot-left">데이터 기준 — 편집한 값은 이 브라우저에 자동 저장됩니다.</span>
     <span>수원지역부 · 영업개발부문</span>
@@ -210,7 +226,7 @@ tr.hl-row td, tr.hl-row th:first-child{background:var(--warn-soft) !important; b
       <label style="font-size:12.5px;font-weight:700;white-space:nowrap;">기준 주차</label>
       <input id="in-week" placeholder="예) 7월 3주">
     </div>
-    <div class="ehdr"><div>지표</div><div>이번 주 실적</div><div>전년비(%)</div></div>
+    <div class="ehint">각 지표의 이번 주 실적과 비율(경영비·목표대비·전년비 등)을 넣으세요. 비어두면 기존 값 유지.</div>
     <div id="edit-fields"></div>
     <div class="eactions">
       <button class="btn" id="btn-reset" title="기본 데이터로 되돌리기">↺ 초기화</button>
@@ -225,45 +241,57 @@ tr.hl-row td, tr.hl-row th:first-child{background:var(--warn-soft) !important; b
 "use strict";
 /* ============================================================
    ▼▼▼  데이터 (매주 갱신하는 곳) — 화면 우측 상단 "이번 주 입력"으로도 수정 가능  ▼▼▼
-   weeks : 주차별 실적 배열(맨 뒤가 최신). yoy : 전년비(%).
-   goal  : 목표(없으면 null). higherBetter : 높을수록 좋은 지표인지.
-   status는 목표(있으면)·전년비로 자동 계산됩니다.
+   weeks : 추이 배열(맨 뒤가 최신) · metrics : 표시할 비율 칩(경영비/목표대비/전년비 등)
+   goal/goalLabel : 목표 칩 · dir : 1(높을수록 좋음)/-1(낮을수록 좋음) · primary : 상태색상 기준 지표 index
    ============================================================ */
 const DEFAULT_DATA = {
   meta:{ region:"2권역 · 수원지역부", week:"7월 3주", asof:"07.19 마감" },
+  /* metrics : 카드에 표시할 비율 칩 배열. dir=1 높을수록 좋음 / dir=-1 낮을수록 좋음.
+     상태색상은 metrics[primary] 값 기준. goal/goalLabel = 목표 칩. roll=주차추이(true)/전년→당월(false) */
   kpis:[
-    /* ── 매출·고객 (group:"a") ── roll:false = 당월 누계형(전년→당월) / true = 주차 추이형 ── */
-    {key:"sales", group:"a", name:"일반상품 일매출", unit:"천원", goal:1243, yoy:106.4, higherBetter:true, roll:false,
-      weeks:[["전년",1208],["당월",1286]]},
-    {key:"conv",  group:"a", name:"간편식사 일매출", unit:"원", goal:100846, yoy:100.5, higherBetter:true, roll:true,
-      weeks:[["7월1주",97965],["7월2주",95640],["7월3주",94598]]},
-    {key:"guest", group:"a", name:"객수", unit:"명", goal:null, yoy:101.5, higherBetter:true, roll:false,
-      weeks:[["전년",266],["당월",270]]},
-    {key:"price", group:"a", name:"객단가", unit:"원", goal:null, yoy:102.7, higherBetter:true, roll:false,
-      weeks:[["전년",7272],["당월",7465]]},
-    {key:"catg",  group:"a", name:"중점카테고리", unit:"원", goal:234431, yoy:106.4, higherBetter:true, roll:false,
-      weeks:[["전년",206969],["당월",220215]]},
+    /* ── 1. 매출·고객 (group:"a") ── */
+    {key:"sales", group:"a", name:"일반상품 일매출", unit:"천원", goal:1243, goalLabel:"경영계획", dir:1, roll:false,
+      weeks:[["전년",1208],["당월",1286]], primary:0, metrics:[{l:"경영비",v:103.4},{l:"실행비",v:103.0}]},
+    {key:"guest", group:"a", name:"객수", unit:"명", goal:null, dir:1, roll:false,
+      weeks:[["전년",266],["당월",270]], primary:0, metrics:[{l:"전년비",v:101.5}]},
+    {key:"price", group:"a", name:"객단가", unit:"원", goal:null, dir:1, roll:false,
+      weeks:[["전년",7272],["당월",7465]], primary:0, metrics:[{l:"전년비",v:102.7}]},
 
-    /* ── 운영·상품 (group:"b") ── */
-    {key:"stock", group:"b", name:"일반상품 재고", unit:"천원", goal:20942, yoy:102.5, higherBetter:true, roll:true,
-      weeks:[["7월1주",20788],["7월2주",20422],["7월3주",20506]]},
-    {key:"order", group:"b", name:"간편식사 발주", unit:"", goal:42.5, yoy:101.1, higherBetter:true, roll:true,
-      weeks:[["7월1주",40.5],["7월2주",39.8],["7월3주",39.4]]},
-    {key:"cups",  group:"b", name:"GET커피 잔수", unit:"잔", goal:9, yoy:120.2, higherBetter:true, roll:true,
-      weeks:[["7월2주",7.1],["7월3주",6.9]]},
-    {key:"coffee",group:"b", name:"GET커피 일매출", unit:"원", goal:7000, yoy:119.2, higherBetter:true, roll:true,
-      weeks:[["7월2주",5943],["7월3주",5751]]},
-    {key:"fry",   group:"b", name:"후라이드 가동률", unit:"%", goal:null, yoy:102.8, higherBetter:true, roll:true,
-      weeks:[["7월2주",65.1],["7월3주",63.9]]},
-    {key:"potato",group:"b", name:"고구마 가동률", unit:"%", goal:null, yoy:164.9, higherBetter:true, roll:true,
-      weeks:[["7월2주",44.3],["7월3주",40.4]]},
-    {key:"best",  group:"b", name:"BEST상품 운영률", unit:"%", goal:90, yoy:null, higherBetter:true, roll:true,
-      weeks:[["7월1주",89.9],["7월2주",90.1],["7월3주",90.1]]},
-    {key:"must",  group:"b", name:"MUST HAVE 운영률", unit:"%", goal:97, yoy:null, higherBetter:true, roll:true,
-      weeks:[["7월1주",96.9],["7월2주",97.0],["7월3주",97.0]]},
-    {key:"deli",  group:"b", name:"배달 취소율(쿠팡)", unit:"%", goal:4.0, yoy:null, higherBetter:false, roll:false,
-      weeks:[["목표",4.0],["당월",3.4]]},
+    /* ── 2. 매출과정지표 (group:"b") ── */
+    {key:"conv",  group:"b", name:"간편식사 일매출", unit:"원", goal:103503, goalLabel:"목표", dir:1, roll:true,
+      weeks:[["7월1주",97965],["7월2주",95640],["7월3주",94598]], primary:0, metrics:[{l:"목표대비",v:91.4}]},
+    {key:"catg",  group:"b", name:"중점카테고리", unit:"원", goal:234431, goalLabel:"목표", dir:1, roll:false,
+      weeks:[["전년",206969],["당월",220215]], primary:0, metrics:[{l:"목표대비",v:93.9}]},
+    {key:"stock", group:"b", name:"일반상품 재고", unit:"천원", goal:20615, goalLabel:"목표(103%)", dir:1, roll:true,
+      weeks:[["7월1주",20676],["7월2주",20422],["7월3주",20506]], primary:0, metrics:[{l:"목표비",v:99.5},{l:"전년비",v:102.5}]},
+    {key:"order", group:"b", name:"간편식사 발주", unit:"", goal:42.5, goalLabel:"목표", dir:1, roll:true,
+      weeks:[["7월1주",40.5],["7월2주",39.8],["7월3주",39.4]], primary:0, metrics:[{l:"목표대비",v:92.7},{l:"전년비",v:101.1}]},
+    {key:"cups",  group:"b", name:"GET커피 잔수", unit:"잔", goal:10, goalLabel:"목표", dir:1, roll:true,
+      weeks:[["7월2주",7.1],["7월3주",6.9]], primary:0, metrics:[{l:"목표대비",v:68.9},{l:"전년비",v:120.2}]},
+    {key:"coffee",group:"b", name:"GET커피 일매출", unit:"원", goal:null, dir:1, roll:true,
+      weeks:[["7월2주",5943],["7월3주",5751]], primary:0, metrics:[{l:"전년비",v:119.2}]},
+    {key:"fry",   group:"b", name:"후라이드 가동률", unit:"%", goal:null, dir:1, roll:true,
+      weeks:[["7월2주",65.1],["7월3주",63.9]], primary:0, metrics:[{l:"전년비",v:102.8}]},
+    {key:"potato",group:"b", name:"고구마 가동률", unit:"%", goal:null, dir:1, roll:true,
+      weeks:[["7월2주",44.3],["7월3주",40.4]], primary:0, metrics:[{l:"전년비",v:164.9}]},
+    {key:"best",  group:"b", name:"BEST상품 운영률", unit:"%", goal:90, goalLabel:"목표", dir:1, roll:true,
+      weeks:[["7월1주",89.9],["7월2주",90.1],["7월3주",90.1]], primary:0, metrics:[{l:"목표대비",v:100.1}]},
+    {key:"must",  group:"b", name:"MUST HAVE 운영률", unit:"%", goal:97, goalLabel:"목표", dir:1, roll:true,
+      weeks:[["7월1주",96.9],["7월2주",97.0],["7월3주",97.0]], primary:0, metrics:[{l:"목표대비",v:100.0}]},
+    {key:"deli_c",group:"b", name:"배달 취소율(쿠팡)", unit:"%", goal:4.0, goalLabel:"목표 4%↓", dir:-1, roll:false,
+      weeks:[["목표",4.0],["당월",3.4]], primary:0, metrics:[{l:"목표대비",v:85.0}]},
+    {key:"deli_b",group:"b", name:"배달 취소율(배민)", unit:"%", goal:4.0, goalLabel:"목표 4%↓", dir:-1, roll:false,
+      weeks:[["목표",4.0],["당월",3.8]], primary:0, metrics:[{l:"목표대비",v:95.0}]},
   ],
+  /* 팀별 점두진열 효과 (진열점입력×점포별효과 조인) : [진열,동일,증가,감소,증가율%,전체전년비%,점두전년비%] */
+  doduRegion:{disp:106, same:94, inc:78, dec:16, incRate:83.0, totYoy:106.9, doduYoy:210.5},
+  doduEffect:{
+    "1팀":[12,11,11,0,100.0,112.2,128.9], "2팀":[18,15,10,5,66.7,101.1,160.4],
+    "3팀":[6,5,4,1,80.0,110.6,255.3],    "4팀":[13,11,10,1,90.9,109.2,173.7],
+    "5팀":[14,13,12,1,92.3,103.9,350.5], "6팀":[9,7,7,0,100.0,103.0,228.4],
+    "7팀":[16,16,11,5,68.8,114.7,147.5], "8팀":[6,5,5,0,100.0,99.2,314.0],
+    "9팀":[11,10,7,3,70.0,100.3,165.9],
+  },
   teams:["1팀","2팀","3팀","4팀","5팀","6팀","7팀","8팀","9팀"],
   team:{
     ext_h1:[14,8,3,6,5,9,11,11,8],   // 연장진열대 상반기(~6월)
@@ -284,7 +312,7 @@ const DEFAULT_DATA = {
 };
 
 /* ---------- 상태/저장 ---------- */
-const LS_KEY = "suwon-kpi-dashboard-v2";
+const LS_KEY = "suwon-kpi-dashboard-v3";
 let selectedTeam = null;   // null=전체(지역부), 0~8=팀 인덱스
 let DATA = load();
 
@@ -303,20 +331,15 @@ function fmt(n){
 }
 
 /* ---------- 상태 계산 ---------- */
+function clsByDir(v, dir){
+  return (dir>0) ? (v>=100?"good":v>=95?"warn":"bad")
+                 : (v<=100?"good":v<=105?"warn":"bad");
+}
 function statusOf(k){
-  const latest = k.weeks.length ? k.weeks[k.weeks.length-1][1] : null;
-  const higher = k.higherBetter!==false;
-  if(k.goal!=null && latest!=null){
-    const ratio = latest/k.goal*100;
-    const cls = higher ? (ratio>=100?"good":ratio>=95?"warn":"bad")
-                       : (ratio<=100?"good":ratio<=105?"warn":"bad");
-    return {cls, label:"목표 "+ratio.toFixed(0)+"%", ratio};
-  }
-  if(k.yoy!=null){
-    const cls = k.yoy>=100 ? "good" : (k.yoy>=95 ? "warn" : "bad");
-    return {cls, label:"전년 "+Math.round(k.yoy)+"%", ratio:k.yoy};
-  }
-  return {cls:"warn", label:"—", ratio:null};
+  const m = (k.metrics&&k.metrics.length) ? k.metrics[k.primary||0] : null;
+  if(!m) return {cls:"warn", label:"—"};
+  const dir = k.dir||1;
+  return {cls:clsByDir(m.v,dir), label:m.l+" "+(Math.round(m.v*10)/10)+"%"};
 }
 const STC = {good:"var(--good)", warn:"var(--warn)", bad:"var(--bad)"};
 
@@ -341,10 +364,12 @@ function sparkBars(weeks, cls){
 /* ---------- 렌더 : KPI ---------- */
 function kpiCard(k){
   const st = statusOf(k);
+  const dir = k.dir||1;
   const latest = k.weeks.length ? k.weeks[k.weeks.length-1] : ["",null];
-  const goalTxt = k.goal!=null ? `목표 <b>${fmt(k.goal)}</b>` : `목표 <b>—</b>`;
-  const yoyCls = (k.yoy!=null && k.yoy>=100) ? "up" : "down";
   const first = k.weeks.length?k.weeks[0][0]:"", lastw = latest[0];
+  const goalTxt = k.goal!=null ? `<span class="gchip tnum">${k.goalLabel||"목표"} <b>${fmt(k.goal)}</b></span>` : "";
+  const chips = (k.metrics||[]).map(m=>
+    `<span class="mchip ${clsByDir(m.v,dir)} tnum">${m.l} <b>${m.v}%</b></span>`).join("");
   return `
     <div class="kpi" style="--st:${STC[st.cls]}">
       <div class="kh">
@@ -352,10 +377,7 @@ function kpiCard(k){
         <span class="stat ${st.cls}">${st.label}</span>
       </div>
       <div class="val tnum">${fmt(latest[1])}<small>${k.unit}</small></div>
-      <div class="meta">
-        <span class="tnum">${goalTxt}</span>
-        <span class="yoy ${yoyCls} tnum">전년비 <b>${k.yoy!=null?k.yoy+"%":"—"}</b></span>
-      </div>
+      <div class="meta">${goalTxt}${chips}</div>
       <div class="spark">
         ${sparkBars(k.weeks, st.cls)}
         <div class="lab"><span>${first}</span><span>${lastw}</span></div>
@@ -369,7 +391,37 @@ function renderKPIs(){
     DATA.kpis.filter(k=>k.group!=="a").map(kpiCard).join("");
   document.getElementById("kpi-note").innerHTML =
     "※ 색상 : <b style='color:var(--good)'>달성/전년↑</b> · <b style='color:var(--warn)'>주의(95~100%)</b> · "+
-    "<b style='color:var(--bad)'>미달(&lt;95%)</b>. 목표 없는 지표는 전년비로 판정, 배달 취소율은 낮을수록 좋음(목표 4% 미만).";
+    "<b style='color:var(--bad)'>미달(&lt;95%)</b>. 배달 취소율은 낮을수록 좋음(목표 4% 미만).";
+  // 팀 선택 시 상단 지표 안내 배너
+  const banner = document.getElementById("kpi-banner");
+  if(selectedTeam!=null){
+    banner.innerHTML = `<div class="banner">🔎 <b>수원${DATA.teams[selectedTeam]}</b> 선택됨 — 상단 매출·과정 지표는 <b>지역부 전체</b> 기준입니다. `+
+      `팀별 <b>진열점(3번)</b>·<b>점두 효과(4번)</b>는 아래에서 팀 기준으로 표시됩니다. (팀별 매출 데이터 입력 시 상단도 팀 기준 전환)</div>`;
+  } else banner.innerHTML = "";
+}
+
+/* ---------- 렌더 : 팀별 점두 효과 ---------- */
+function renderDodu(){
+  const el = document.getElementById("dodu-table");
+  const teams = DATA.teams, R = DATA.doduRegion;
+  const head = `<thead><tr>
+    <th>팀</th><th>진열점</th><th>동일점</th><th>증가</th><th>감소</th>
+    <th>증가율</th><th>전체 일매출<br>전년비</th><th>점두상품<br>전년비</th></tr></thead>`;
+  let body = `<tbody><tr class="sum"><th>수원지역부</th><td>${R.disp}</td><td>${R.same}</td>`+
+    `<td>${R.inc}</td><td>${R.dec}</td><td>${R.incRate}%</td><td>${R.totYoy}%</td><td>${R.doduYoy}%</td></tr>`;
+  teams.forEach((tm,i)=>{
+    const d = DATA.doduEffect[tm]; if(!d) return;
+    const hl = (i===selectedTeam)?' class="hl-row"':'';
+    const incCls = clsByDir(d[4],1), totCls = clsByDir(d[5],1), dduCls = clsByDir(d[6],1);
+    body += `<tr${hl}><th>수원${tm}</th><td class="tnum">${d[0]}</td><td class="tnum">${d[1]}</td>`+
+      `<td class="tnum" style="color:var(--good);font-weight:700">${d[2]}</td>`+
+      `<td class="tnum" style="color:${d[3]>0?'var(--bad)':'var(--muted)'}">${d[3]}</td>`+
+      `<td class="tnum" style="color:var(--${incCls})">${d[4]}%</td>`+
+      `<td class="tnum" style="color:var(--${totCls})">${d[5]}%</td>`+
+      `<td class="tnum" style="color:var(--${dduCls})">${d[6]}%</td></tr>`;
+  });
+  body += "</tbody>";
+  el.innerHTML = head+body;
 }
 
 /* ---------- 렌더 : 팀 매트릭스 ---------- */
@@ -446,7 +498,7 @@ function renderTeamSelect(){
     DATA.teams.map((tm,i)=>`<option value="${i}">수원${tm}</option>`).join("");
 }
 function renderAll(){
-  renderTeamSelect(); renderHeader(); renderKPIs(); renderTeam(); renderTeamSummary(); renderHL();
+  renderTeamSelect(); renderHeader(); renderKPIs(); renderTeam(); renderTeamSummary(); renderHL(); renderDodu();
 }
 renderAll();
 
@@ -459,10 +511,14 @@ function openEdit(){
   const wrap = document.getElementById("edit-fields");
   wrap.innerHTML = DATA.kpis.map((k,idx)=>{
     const latest = k.weeks.length? k.weeks[k.weeks.length-1][1] : "";
+    const mets = (k.metrics||[]).map((m,mi)=>
+      `<div class="ein"><label>${m.l}(%)</label>
+        <input type="number" step="any" data-i="${idx}" data-f="m" data-m="${mi}" value="${m.v}"></div>`).join("");
     return `<div class="efield">
-      <div><span class="en">${k.name}</span> <span class="eu">${k.unit||""}</span></div>
-      <input type="number" step="any" data-i="${idx}" data-f="val" value="${latest}">
-      <input type="number" step="any" data-i="${idx}" data-f="yoy" value="${k.yoy??""}">
+      <div class="ename"><span class="en">${k.name}</span> <span class="eu">${k.unit||""}</span></div>
+      <div class="ein"><label>이번 주 실적</label>
+        <input type="number" step="any" data-i="${idx}" data-f="val" value="${latest}"></div>
+      ${mets}
     </div>`;
   }).join("");
   editwrap.classList.add("open");
@@ -475,9 +531,9 @@ function applyEdit(){
   document.querySelectorAll("#edit-fields input").forEach(inp=>{
     const i=+inp.dataset.i, f=inp.dataset.f, raw=inp.value.trim();
     if(raw==="") return;
-    const v = parseFloat(raw);
+    const v = parseFloat(raw); if(isNaN(v)) return;
     const k = DATA.kpis[i];
-    if(f==="yoy"){ k.yoy = v; }
+    if(f==="m"){ const mi=+inp.dataset.m; if(k.metrics&&k.metrics[mi]) k.metrics[mi].v=v; }
     else if(f==="val"){
       if(k.roll===false){
         // 당월 누계형 : 마지막 값(당월)만 갱신
@@ -507,7 +563,7 @@ document.getElementById("btn-reset").onclick = ()=>{
 document.getElementById("team-select").onchange = e=>{
   const v=e.target.value;
   selectedTeam = (v==="") ? null : +v;
-  renderTeam(); renderTeamSummary();
+  renderKPIs(); renderTeam(); renderTeamSummary(); renderDodu();
   if(selectedTeam!=null) document.getElementById("team-summary").scrollIntoView({behavior:"smooth",block:"center"});
 };
 

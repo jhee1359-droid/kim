@@ -275,14 +275,17 @@ function convBlock(obj,title,n,nonR){
     tiles+=`${tile(nonR.yoy,"%","미진행점 전년비(비교군)",null)}${tile((gap>=0?"+":"")+gap,"%p","초과분(진행−미진행)",gap>=0?"good":"bad")}`;
   }
   html+=`<div class="tiles">${tiles}</div>`;
+  const ts=Object.values(obj.teams).reduce((a,t)=>{a.o+=t.o;a.s+=t.s;a.m+=t.m;a.n+=t.n;return a;},{o:0,s:0,m:0,n:0});
+  const rO=(ts.o/ts.n), rS=(ts.s/ts.n), rM=(ts.m/ts.n);
   html+=`<div class="panel"><div class="tblscroll"><table>${teamRows(obj,[
     {h:"점포수",get:t=>`<td class="tnum">${t.n}</td>`,reg:r=>r.n},
-    {h:"일 발주",get:t=>`<td class="tnum">${t.o}</td>`,reg:r=>"—"},
-    {h:"일 판매",get:t=>`<td class="tnum">${t.s}</td>`,reg:r=>"—"},
-    {h:"일매출(합)",get:t=>`<td class="tnum">${fmt(t.m)}</td>`,reg:r=>"—"},
+    {h:"점포당 발주",get:t=>`<td class="tnum">${(t.o/t.n).toFixed(1)}</td>`,reg:r=>rO.toFixed(1)},
+    {h:"점포당 판매",get:t=>`<td class="tnum">${(t.s/t.n).toFixed(1)}</td>`,reg:r=>rS.toFixed(1)},
+    {h:"점포당 일매출",get:t=>`<td class="tnum">${fmt(Math.round(t.m/t.n))}</td>`,reg:r=>fmt(Math.round(rM))},
     {h:"전년비",get:t=>pctCell(t.yoy,1),reg:r=>`<span class="${yc(r.yoy,1)}">${r.yoy}%</span>`},
     {h:"전월비",get:t=>pctCell(t.mom,1),reg:r=>`<span class="${yc(r.mom,1)}">${r.mom}%</span>`},
   ])}</table></div></div>`;
+  html+=`<div class="note">※ 팀 행의 발주·판매·일매출은 <b>점포당 평균</b>(팀 합계÷점포수)입니다. 전년비·전월비는 팀 합계 기준(집계식)이라 점포수 영향 없음.</div>`;
   if(selTeam && obj.teams[selTeam]){
     const td=obj.teams[selTeam];
     html+=`<div class="note" style="margin-top:10px"><b>수원${selTeam} 점포별</b></div>`;

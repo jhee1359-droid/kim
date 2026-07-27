@@ -66,7 +66,11 @@ body{
   box-shadow:var(--shadow); position:relative; overflow:hidden;}
 .kpi::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--st,var(--accent));}
 .kpi .kh{display:flex; justify-content:space-between; align-items:center; gap:8px;}
-.kpi .knm{font-size:12.5px; font-weight:700; color:var(--muted);}
+.kpi .knm{font-size:12.5px; font-weight:700; color:var(--muted); display:inline-flex; align-items:center; gap:5px; flex-wrap:wrap;}
+.rank{font-size:9.5px; font-weight:800; padding:1px 6px; border-radius:5px; background:var(--surface-2); color:var(--muted); white-space:nowrap;}
+.rank.good{background:var(--good-soft); color:var(--good);}
+.rank.warn{background:var(--warn-soft); color:var(--warn);}
+.rank.bad{background:var(--bad-soft); color:var(--bad);}
 .stat{font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:999px; white-space:nowrap;}
 .stat.good{background:var(--good-soft); color:var(--good);}
 .stat.warn{background:var(--warn-soft); color:var(--warn);}
@@ -245,42 +249,42 @@ tr.hl-row td, tr.hl-row th:first-child{background:var(--warn-soft) !important; b
    goal/goalLabel : 목표 칩 · dir : 1(높을수록 좋음)/-1(낮을수록 좋음) · primary : 상태색상 기준 지표 index
    ============================================================ */
 const DEFAULT_DATA = {
-  meta:{ region:"2권역 · 수원지역부", week:"7월 3주", asof:"07.19 마감" },
+  meta:{ region:"2권역 · 수원지역부", week:"7월 3주", asof:"07.19 마감", regions:23 },
   /* metrics : 카드에 표시할 비율 칩 배열. dir=1 높을수록 좋음 / dir=-1 낮을수록 좋음.
      상태색상은 metrics[primary] 값 기준. goal/goalLabel = 목표 칩. roll=주차추이(true)/전년→당월(false) */
   kpis:[
     /* ── 1. 매출·고객 (group:"a") ── */
-    {key:"sales", group:"a", name:"일반상품 일매출", unit:"천원", goal:1243, goalLabel:"경영계획", dir:1, roll:false,
+    {key:"sales", group:"a", name:"일반상품 일매출", unit:"천원", goal:1243, goalLabel:"경영계획", dir:1, roll:false, rank:8, rankEst:true,
       weeks:[["전년",1208],["당월",1286]], primary:0, metrics:[{l:"경영비",v:103.4},{l:"실행비",v:103.0}]},
-    {key:"guest", group:"a", name:"객수", unit:"명", goal:null, dir:1, roll:false,
+    {key:"guest", group:"a", name:"객수", unit:"명", goal:null, dir:1, roll:false, rank:14, rankEst:true,
       weeks:[["전년",266],["당월",270]], primary:0, metrics:[{l:"전년비",v:101.5}]},
-    {key:"price", group:"a", name:"객단가", unit:"원", goal:null, dir:1, roll:false,
+    {key:"price", group:"a", name:"객단가", unit:"원", goal:null, dir:1, roll:false, rank:9, rankEst:true,
       weeks:[["전년",7272],["당월",7465]], primary:0, metrics:[{l:"전년비",v:102.7}]},
 
     /* ── 2. 매출과정지표 (group:"b") ── */
-    {key:"conv",  group:"b", name:"간편식사 일매출", unit:"원", goal:103503, goalLabel:"목표", dir:1, roll:true,
+    {key:"conv",  group:"b", name:"간편식사 일매출", unit:"원", goal:103503, goalLabel:"목표", dir:1, roll:true, rank:21,
       weeks:[["7월1주",97965],["7월2주",95640],["7월3주",94598]], primary:0, metrics:[{l:"목표대비",v:91.4}]},
-    {key:"catg",  group:"b", name:"중점카테고리", unit:"원", goal:234431, goalLabel:"목표", dir:1, roll:false,
+    {key:"catg",  group:"b", name:"중점카테고리", unit:"원", goal:234431, goalLabel:"목표", dir:1, roll:false, rank:7,
       weeks:[["전년",206969],["당월",220215]], primary:0, metrics:[{l:"목표대비",v:93.9}]},
-    {key:"stock", group:"b", name:"일반상품 재고", unit:"천원", goal:20615, goalLabel:"목표(103%)", dir:1, roll:true,
+    {key:"stock", group:"b", name:"일반상품 재고", unit:"천원", goal:20615, goalLabel:"목표(103%)", dir:1, roll:true, rank:2, rankEst:true,
       weeks:[["7월1주",20676],["7월2주",20422],["7월3주",20506]], primary:0, metrics:[{l:"목표비",v:99.5},{l:"전년비",v:102.5}]},
-    {key:"order", group:"b", name:"간편식사 발주", unit:"", goal:42.5, goalLabel:"목표", dir:1, roll:true,
+    {key:"order", group:"b", name:"간편식사 발주", unit:"", goal:42.5, goalLabel:"목표", dir:1, roll:true, rank:null,
       weeks:[["7월1주",40.5],["7월2주",39.8],["7월3주",39.4]], primary:0, metrics:[{l:"목표대비",v:92.7},{l:"전년비",v:101.1}]},
-    {key:"cups",  group:"b", name:"GET커피 잔수", unit:"잔", goal:10, goalLabel:"목표", dir:1, roll:true,
+    {key:"cups",  group:"b", name:"GET커피 잔수", unit:"잔", goal:10, goalLabel:"목표", dir:1, roll:true, rank:14,
       weeks:[["7월2주",7.1],["7월3주",6.9]], primary:0, metrics:[{l:"목표대비",v:68.9},{l:"전년비",v:120.2}]},
-    {key:"coffee",group:"b", name:"GET커피 일매출", unit:"원", goal:null, dir:1, roll:true,
+    {key:"coffee",group:"b", name:"GET커피 일매출", unit:"원", goal:null, dir:1, roll:true, rank:null,
       weeks:[["7월2주",5943],["7월3주",5751]], primary:0, metrics:[{l:"전년비",v:119.2}]},
-    {key:"fry",   group:"b", name:"후라이드 가동률", unit:"%", goal:null, dir:1, roll:true,
+    {key:"fry",   group:"b", name:"후라이드 가동률", unit:"%", goal:null, dir:1, roll:true, rank:5,
       weeks:[["7월2주",65.1],["7월3주",63.9]], primary:0, metrics:[{l:"전년비",v:102.8}]},
-    {key:"potato",group:"b", name:"고구마 가동률", unit:"%", goal:null, dir:1, roll:true,
+    {key:"potato",group:"b", name:"고구마 가동률", unit:"%", goal:null, dir:1, roll:true, rank:2,
       weeks:[["7월2주",44.3],["7월3주",40.4]], primary:0, metrics:[{l:"전년비",v:164.9}]},
-    {key:"best",  group:"b", name:"BEST상품 운영률", unit:"%", goal:90, goalLabel:"목표", dir:1, roll:true,
+    {key:"best",  group:"b", name:"BEST상품 운영률", unit:"%", goal:90, goalLabel:"목표", dir:1, roll:true, rank:16,
       weeks:[["7월1주",89.9],["7월2주",90.1],["7월3주",90.1]], primary:0, metrics:[{l:"목표대비",v:100.1}]},
-    {key:"must",  group:"b", name:"MUST HAVE 운영률", unit:"%", goal:97, goalLabel:"목표", dir:1, roll:true,
+    {key:"must",  group:"b", name:"MUST HAVE 운영률", unit:"%", goal:97, goalLabel:"목표", dir:1, roll:true, rank:9,
       weeks:[["7월1주",96.9],["7월2주",97.0],["7월3주",97.0]], primary:0, metrics:[{l:"목표대비",v:100.0}]},
-    {key:"deli_c",group:"b", name:"배달 취소율(쿠팡)", unit:"%", goal:4.0, goalLabel:"목표 4%↓", dir:-1, roll:false,
+    {key:"deli_c",group:"b", name:"배달 취소율(쿠팡)", unit:"%", goal:4.0, goalLabel:"목표 4%↓", dir:-1, roll:false, rank:10,
       weeks:[["목표",4.0],["당월",3.4]], primary:0, metrics:[{l:"목표대비",v:85.0}]},
-    {key:"deli_b",group:"b", name:"배달 취소율(배민)", unit:"%", goal:4.0, goalLabel:"목표 4%↓", dir:-1, roll:false,
+    {key:"deli_b",group:"b", name:"배달 취소율(배민)", unit:"%", goal:4.0, goalLabel:"목표 4%↓", dir:-1, roll:false, rank:10,
       weeks:[["목표",4.0],["당월",3.8]], primary:0, metrics:[{l:"목표대비",v:95.0}]},
   ],
   /* 팀별 점두진열 효과 (진열점입력×점포별효과 조인) : [진열,동일,증가,감소,증가율%,전체전년비%,점두전년비%] */
@@ -312,7 +316,7 @@ const DEFAULT_DATA = {
 };
 
 /* ---------- 상태/저장 ---------- */
-const LS_KEY = "suwon-kpi-dashboard-v3";
+const LS_KEY = "suwon-kpi-dashboard-v4";
 let selectedTeam = null;   // null=전체(지역부), 0~8=팀 인덱스
 let DATA = load();
 
@@ -362,6 +366,12 @@ function sparkBars(weeks, cls){
 }
 
 /* ---------- 렌더 : KPI ---------- */
+function rankPill(k){
+  if(k.rank==null) return "";
+  const of = (DATA.meta&&DATA.meta.regions)||23;
+  const cls = k.rank<=Math.ceil(of/3) ? "good" : (k.rank<=Math.ceil(of*2/3) ? "warn" : "bad");
+  return `<span class="rank ${cls}" title="전사 ${of}개 지역부 중 순위${k.rankEst?" (산출)":""}">전사 ${k.rankEst?"≈":""}${k.rank}위</span>`;
+}
 function kpiCard(k){
   const st = statusOf(k);
   const dir = k.dir||1;
@@ -373,7 +383,7 @@ function kpiCard(k){
   return `
     <div class="kpi" style="--st:${STC[st.cls]}">
       <div class="kh">
-        <span class="knm">${k.name}</span>
+        <span class="knm">${k.name}${rankPill(k)}</span>
         <span class="stat ${st.cls}">${st.label}</span>
       </div>
       <div class="val tnum">${fmt(latest[1])}<small>${k.unit}</small></div>
@@ -519,6 +529,8 @@ function openEdit(){
       <div class="ein"><label>이번 주 실적</label>
         <input type="number" step="any" data-i="${idx}" data-f="val" value="${latest}"></div>
       ${mets}
+      <div class="ein"><label>전사 순위</label>
+        <input type="number" step="1" data-i="${idx}" data-f="rank" value="${k.rank??""}"></div>
     </div>`;
   }).join("");
   editwrap.classList.add("open");
@@ -533,7 +545,8 @@ function applyEdit(){
     if(raw==="") return;
     const v = parseFloat(raw); if(isNaN(v)) return;
     const k = DATA.kpis[i];
-    if(f==="m"){ const mi=+inp.dataset.m; if(k.metrics&&k.metrics[mi]) k.metrics[mi].v=v; }
+    if(f==="rank"){ k.rank = Math.round(v); }
+    else if(f==="m"){ const mi=+inp.dataset.m; if(k.metrics&&k.metrics[mi]) k.metrics[mi].v=v; }
     else if(f==="val"){
       if(k.roll===false){
         // 당월 누계형 : 마지막 값(당월)만 갱신

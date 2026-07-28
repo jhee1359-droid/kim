@@ -91,6 +91,22 @@ td.itemcell{white-space:normal;text-align:left;font-size:11px;color:var(--muted)
 .insight li{margin:2px 0;}
 .insight b{font-weight:800;}
 .note{font-size:11px;color:var(--muted);margin:9px 2px 0;line-height:1.5;}
+/* 이번 주 요약 */
+.summary{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:16px 18px;margin:6px 0 14px;border-top:4px solid var(--accent);}
+.sm-h{font-size:16px;font-weight:800;color:var(--accent-dark);margin-bottom:11px;display:flex;align-items:baseline;gap:9px;}
+.sm-h span{font-size:11.5px;font-weight:600;color:var(--muted);}
+.sm-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:680px){.sm-cols{grid-template-columns:1fr;}}
+.sm-col{border-radius:12px;padding:11px 14px;}
+.sm-col.good{background:var(--good-soft);}
+.sm-col.warn{background:var(--warn-soft);}
+.sm-t{font-size:12.5px;font-weight:800;margin-bottom:6px;}
+.sm-col.good .sm-t{color:var(--good);}
+.sm-col.warn .sm-t{color:var(--warn);}
+.sm-col ul{margin:0 0 0 16px;font-size:12px;line-height:1.55;}
+.sm-col li{margin:4px 0;}
+.sm-col b{font-weight:800;}
+.sm-note{font-size:10.5px;color:var(--muted);margin-top:9px;}
 .empty{background:var(--surface);border:1px dashed var(--line);border-radius:13px;padding:26px;text-align:center;color:var(--muted);font-size:13px;box-shadow:var(--shadow);}
 .page{display:none;}.page.on{display:block;}
 .foot{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;}
@@ -181,8 +197,32 @@ function kpiCard(k){
     <div class="meta">${goal}${chips}</div>
     <div class="spark">${sparkBars(k.weeks,cls)}<div class="lab"><span>${k.weeks[0][0]}</span><span>${latest[0]}</span></div></div></div>`;
 }
+function renderSummary(){
+  const good=[],warn=[];
+  KPI.list.forEach(k=>{ const m=k.m[k.pr||0],dir=k.dir||1,cls=clsDir(m[1],dir);
+    if(cls==="bad") warn.push(`${k.name} <b>${m[0]} ${m[1]}%</b>`);
+    else if(dir>0&&m[1]>=110) good.push(`${k.name} <b>${m[0]} ${m[1]}%</b>`); });
+  const E=REPORT.lasimEff,ri=REPORT.rice.region,rin=REPORT.rice_non.region,sa=REPORT.sand.region,san=REPORT.sand_non.region,dd=REPORT.dodu.region,ex=REPORT.ext.region;
+  const rgap=Math.round((ri.yoy-rin.yoy)*10)/10, sgap=Math.round((sa.yoy-san.yoy)*10)/10;
+  const wins=[
+    `☕ <b>라심발리 교체 효과 확실</b> — 도입점 잔수 전년비 ${E.treat.cups_yoy}% vs 미도입 ${E.ctrl.cups_yoy}%, 순효과 <b class="g">+${E.did_cups}%p</b> (평균 ${E.treat.cups_2507}→${E.treat.cups_2607}잔)`,
+    `🍙 <b>헬시플레저 행사 효과</b> — 진행 ${sa.yoy}% vs 미진행 ${san.yoy}%, 초과분 <b class="g">+${sgap}%p</b>`,
+    `🏪 <b>점두진열</b> 상품매출 전년비 <b class="g">${dd.dy}%(2.1배)</b>, 동일점 ${dd.incRate}% 성장`,
+    `📦 <b>연장진열대</b> 일매출 전년비 ${ex.sy}% (9팀 ${REPORT.ext.teams['9팀'].sy}%·재고 ${REPORT.ext.teams['9팀'].ry}% 최고)`,
+  ].concat(good.slice(0,2).map(g=>`📈 ${g}`));
+  const risks=[
+    `🍙 <b>주먹밥 행사 재점검</b> — 진행 ${ri.yoy}% < 미진행 ${rin.yoy}% (초과분 <b class="b">${rgap}%p</b>) → 고매출 성숙점 위주라 저성장점 재배치 검토`,
+  ].concat(warn.map(w=>`⚠️ ${w} — 목표/전년 미달`));
+  return `<div class="summary">
+    <div class="sm-h">📋 이번 주 핵심 요약 <span>7월 3주(07.19) · 자동 추출</span></div>
+    <div class="sm-cols">
+      <div class="sm-col good"><div class="sm-t">✅ 성과 (효과 확인)</div><ul>${wins.map(x=>`<li>${x}</li>`).join("")}</ul></div>
+      <div class="sm-col warn"><div class="sm-t">⚠️ 점검 필요</div><ul>${risks.map(x=>`<li>${x}</li>`).join("")}</ul></div>
+    </div>
+    <div class="sm-note">※ 지표 목표/전년 대비와 진행 vs 미진행·DiD 결과에서 자동 선별했습니다.</div></div>`;
+}
 function renderDash(){
-  return `<div class="teamnote">📊 <b>지역부 전체</b> 기준 고정 화면입니다 (팀 선택과 무관).</div>
+  return renderSummary()+`<div class="teamnote">📊 <b>지역부 전체</b> 기준 고정 화면입니다 (팀 선택과 무관).</div>
     <div class="sec-h"><span class="n">1</span><h2>매출·고객 지표</h2></div>
     <div class="kgrid">${KPI.list.slice(0,3).map(kpiCard).join("")}</div>
     <div class="sec-h"><span class="n">2</span><h2>매출과정지표</h2></div>

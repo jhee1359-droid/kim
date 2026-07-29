@@ -1,4 +1,4 @@
-<title>2026년 7월 중점 카테고리 — 전년비(일매출) 부진 원인 진단</title>
+<title>2026년 7월(1~23일) 중점 카테고리 현황 — 전년비·목표 진단</title>
 <style>
   :root{
     --surface-0:#f4f4f2; --surface-1:#ffffff; --surface-2:#faf9f7;
@@ -28,69 +28,66 @@
     font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,-apple-system,sans-serif; line-height:1.55; -webkit-font-smoothing:antialiased;}
   .page{max-width:1040px; margin:0 auto; padding:32px 28px 64px;}
   .theme-btn{position:fixed; top:14px; right:14px; z-index:20; border:1px solid var(--border-strong); background:var(--surface-1); color:var(--ink-2); border-radius:8px; padding:7px 12px; font-size:13px; cursor:pointer; box-shadow:var(--shadow);}
-  header.rep{border-radius:16px; padding:30px 32px; margin-bottom:22px; background:linear-gradient(135deg,#3a1f1e 0%,#6e2f28 55%,#a5382a 100%); color:#fff; box-shadow:var(--shadow); overflow:hidden;}
+  header.rep{border-radius:16px; padding:30px 32px; margin-bottom:22px; background:linear-gradient(135deg,#1e3a5f 0%,#28527a 55%,#2a6cae 100%); color:#fff; box-shadow:var(--shadow); overflow:hidden;}
   header.rep .eyebrow{font-size:12.5px; letter-spacing:.14em; opacity:.82; font-weight:600;}
-  header.rep h1{font-size:26px; margin:8px 0 4px; font-weight:800; letter-spacing:-.01em;}
+  header.rep h1{font-size:25px; margin:8px 0 4px; font-weight:800; letter-spacing:-.01em;}
   header.rep .sub{font-size:14px; opacity:.9;}
   header.rep .meta{display:flex; flex-wrap:wrap; gap:22px; margin-top:18px; font-size:13px;}
   header.rep .meta b{display:block; font-size:11px; opacity:.72; font-weight:600; letter-spacing:.04em; margin-bottom:2px;}
   header.rep .meta span{font-weight:700; font-size:14px;}
   section{background:var(--surface-1); border:1px solid var(--border); border-radius:14px; padding:24px 26px; margin-bottom:20px; box-shadow:var(--shadow);}
   .sec-h{display:flex; align-items:baseline; gap:10px; margin:0 0 4px;}
-  .sec-h .num{font-family:var(--mono); font-size:13px; color:var(--crit); font-weight:700;}
+  .sec-h .num{font-family:var(--mono); font-size:13px; color:var(--s1); font-weight:700;}
   h2{font-size:18.5px; margin:0; font-weight:750; letter-spacing:-.01em;}
   .sec-desc{color:var(--ink-2); font-size:13.5px; margin:4px 0 18px;}
-  .verdicts{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+  .verdicts{display:grid; grid-template-columns:1.05fr 1fr 1fr; gap:14px;}
   .vcard{border:1px solid var(--border); border-radius:12px; padding:18px; background:var(--surface-2); position:relative; overflow:hidden;}
   .vcard::before{content:''; position:absolute; left:0; top:0; bottom:0; width:5px;}
-  .vcard.a::before{background:var(--crit);} .vcard.b::before{background:var(--s3);} .vcard.c::before{background:var(--s1);}
+  .vcard.a::before{background:var(--s1);} .vcard.b::before{background:var(--warn);} .vcard.c::before{background:var(--crit);}
   .vcard .tag{font-size:11.5px; font-weight:800; letter-spacing:.03em; margin-bottom:8px;}
-  .vcard.a .tag{color:var(--crit);} .vcard.b .tag{color:var(--good-ink);} .vcard.c .tag{color:var(--s1);}
-  .vcard .cat{font-size:20px; font-weight:800; letter-spacing:-.01em;}
+  .vcard.a .tag{color:var(--s1);} .vcard.b .tag{color:var(--warn);} .vcard.c .tag{color:var(--crit);}
+  .vcard .cat{font-size:19px; font-weight:800; letter-spacing:-.01em;}
   .vcard .num{font-size:13px; font-weight:700; margin:6px 0 6px; font-variant-numeric:tabular-nums;}
   .vcard p{font-size:12.5px; color:var(--ink-2); margin:0;}
-  .diag-lead{background:var(--surface-2); border-left:4px solid var(--crit); border-radius:0 10px 10px 0; padding:14px 18px; font-size:14px; margin:18px 0 6px;}
-  .diag-lead.blue{border-left-color:var(--s1);} .diag-lead b{color:var(--ink-1);}
+  .diag-lead{background:var(--surface-2); border-left:4px solid var(--s1); border-radius:0 10px 10px 0; padding:14px 18px; font-size:14px; margin:18px 0 6px;}
+  .diag-lead.red{border-left-color:var(--crit);} .diag-lead b{color:var(--ink-1);}
+  /* target/actual/prior bars */
+  .tap{margin:6px 0 4px;}
+  .tap-row{display:grid; grid-template-columns:64px 1fr 130px; align-items:center; gap:12px; margin:11px 0;}
+  .tap-row .lb{font-size:13px; font-weight:700;}
+  .tap-track{background:var(--track); border-radius:6px; height:30px; position:relative; overflow:hidden;}
+  .tap-fill{height:100%; border-radius:6px; display:flex; align-items:center; justify-content:flex-end; padding-right:10px;}
+  .tap-fill .v{font-size:13px; font-weight:800; color:#fff; font-variant-numeric:tabular-nums;}
+  .tap-row .rt{font-size:12px; text-align:right; color:var(--ink-2); font-variant-numeric:tabular-nums;}
+  .tap-row .rt b{color:var(--ink-1);}
   .chart-wrap{overflow-x:auto;}
   .legend{display:flex; flex-wrap:wrap; gap:16px; margin:2px 0 16px; font-size:12.5px; color:var(--ink-2);}
   .legend span{display:inline-flex; align-items:center; gap:6px;} .legend i{width:11px; height:11px; border-radius:3px; display:inline-block;}
-  .bar-row{display:grid; grid-template-columns:118px 1fr 168px; align-items:center; gap:12px; margin:10px 0;}
-  .bar-row .name{font-size:13.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .bar-track{background:var(--track); border-radius:5px; height:24px; position:relative; overflow:hidden;}
+  .bar-row{display:grid; grid-template-columns:118px 1fr 132px; align-items:center; gap:12px; margin:9px 0;}
+  .bar-row .name{font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .bar-track{background:var(--track); border-radius:5px; height:22px; position:relative; overflow:hidden;}
   .bar-fill{height:100%; border-radius:5px; display:flex; align-items:center; justify-content:flex-end; padding-right:8px; min-width:4px;}
-  .bar-fill .inlab{font-size:12px; font-weight:800; color:#fff; font-variant-numeric:tabular-nums;}
+  .bar-fill .inlab{font-size:11.5px; font-weight:800; color:#fff; font-variant-numeric:tabular-nums;}
   .ref100{position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--ink-1); opacity:.55; z-index:2;}
   .ref100 .rlab{position:absolute; top:-15px; left:50%; transform:translateX(-50%); font-size:9.5px; font-weight:700; white-space:nowrap; color:var(--ink-2);}
   .bar-row .val{font-size:12px; text-align:right; font-variant-numeric:tabular-nums; color:var(--ink-2);}
   .bar-row .val b{color:var(--ink-1);}
   table{width:100%; border-collapse:collapse; font-size:13px; margin-top:4px;}
-  th,td{text-align:left; padding:9px 10px; border-bottom:1px solid var(--border);}
+  th,td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--border);}
   th{font-size:11.5px; color:var(--ink-3); font-weight:700;}
   td.num,th.num{text-align:right; font-variant-numeric:tabular-nums;}
   tbody tr:last-child td{border-bottom:none;}
-  .pill{display:inline-block; padding:2px 9px; border-radius:20px; font-size:11.5px; font-weight:700;}
+  .pill{display:inline-block; padding:2px 8px; border-radius:20px; font-size:11.5px; font-weight:700;}
   .pill.crit{background:rgba(208,59,59,.13); color:var(--crit);}
   .pill.warn{background:rgba(184,134,11,.15); color:var(--warn);}
   .pill.ok{background:rgba(12,163,12,.13); color:var(--good-ink);}
-  .down{color:var(--crit); font-weight:700;} .flat{color:var(--good-ink); font-weight:700;}
-  .lenses{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
-  .lens{border:1px solid var(--border); border-radius:12px; padding:18px 20px; background:var(--surface-2);}
-  .lens .lt{font-size:12.5px; color:var(--ink-2); font-weight:700; margin-bottom:4px;}
-  .lens .lv{font-size:34px; font-weight:850; letter-spacing:-.02em; font-variant-numeric:tabular-nums;}
-  .lens .ld{font-size:12px; color:var(--ink-3); margin-top:6px;}
-  .lens.mild{border-color:rgba(184,134,11,.35);} .lens.mild .lv{color:var(--warn);}
-  .lens.severe{border-color:rgba(208,59,59,.4);} .lens.severe .lv{color:var(--crit);}
-  .stack{display:flex; height:38px; border-radius:9px; overflow:hidden; border:1px solid var(--border); margin:6px 0 8px;}
-  .stack .seg{display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:800; min-width:2px;}
-  .stack-labs{display:flex; flex-wrap:wrap; gap:14px; font-size:12px; color:var(--ink-2); margin-top:4px;}
-  .stack-labs span{display:inline-flex; align-items:center; gap:6px;} .stack-labs i{width:10px;height:10px;border-radius:3px;}
   ul.reco{margin:6px 0 0; padding-left:0; list-style:none;}
   ul.reco li{padding:11px 0 11px 34px; border-bottom:1px solid var(--border); position:relative; font-size:13.5px; color:var(--ink-2);}
   ul.reco li:last-child{border-bottom:none;} ul.reco li b{color:var(--ink-1);}
-  ul.reco li .ic{position:absolute; left:0; top:11px; width:22px; height:22px; border-radius:6px; background:rgba(208,59,59,.12); color:var(--crit); font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center;}
+  ul.reco li .ic{position:absolute; left:0; top:11px; width:22px; height:22px; border-radius:6px; background:rgba(42,120,214,.12); color:var(--s1); font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center;}
   footer.rep{color:var(--ink-3); font-size:11.5px; text-align:center; padding:8px 0 0; line-height:1.7;}
   .tip{position:fixed; pointer-events:none; z-index:50; background:var(--ink-1); color:var(--surface-1); padding:7px 10px; border-radius:8px; font-size:12px; box-shadow:var(--shadow); opacity:0; transition:opacity .08s; max-width:250px;}
-  @media (max-width:820px){.verdicts,.lenses{grid-template-columns:1fr;} .bar-row{grid-template-columns:96px 1fr 120px;}}
+  @media (max-width:820px){.verdicts{grid-template-columns:1fr;} .bar-row{grid-template-columns:100px 1fr 96px;} .tap-row{grid-template-columns:56px 1fr 96px;}}
   @media print{:root{--surface-0:#fff;} body{background:#fff;} .theme-btn,.tip{display:none!important;} .page{max-width:none; padding:0;} section,header.rep{box-shadow:none; break-inside:avoid;} *{-webkit-print-color-adjust:exact; print-color-adjust:exact;} section{margin-bottom:14px; border-color:#ccc;} @page{margin:12mm;}}
 </style>
 
@@ -98,130 +95,135 @@
 <div class="page">
 
   <header class="rep">
-    <div class="eyebrow">YEAR-OVER-YEAR (DAILY-SALES BASIS) · 전년비 부진 원인 진단</div>
-    <h1>2026년 7월 중점 카테고리 — 실적 부진의 진짜 원인은 하이볼·리큐르 붕괴</h1>
-    <div class="sub">수원지역부 · 일매출(일평균) 기준 전년비 · 하이볼·리큐르만 유일하게 반토막</div>
+    <div class="eyebrow">중점 카테고리 KPI · 전년비 & 목표 진단 (점포당 일매출)</div>
+    <h1>2026년 7월(1~23일) 중점 카테고리 현황 — 전년비는 상회, 목표는 미달인 이유</h1>
+    <div class="sub">수원지역부 · 전년비 105.0% 상회 ↔ 목표비 91.7% 미달 · 하이볼·리큐르가 성장 발목</div>
     <div class="meta">
-      <div><b>비교 기준</b><span>일매출 = 총매출 ÷ 영업일수</span></div>
-      <div><b>영업일수</b><span>2025.7 = 31일 · 2026.7 = 27일</span></div>
-      <div><b>대상</b><span>면류·국산맥주·수입맥주·하이볼·리큐르·커피(자동)</span></div>
-      <div><b>작성일</b><span>2026.07.28</span></div>
+      <div><b>당해</b><span>2026.07.01 ~ 07.23 (23영업일)</span></div>
+      <div><b>전년</b><span>2025.07.01 ~ 07.31 (31영업일)</span></div>
+      <div><b>지표</b><span>점포당 일매출 = 매출 ÷ 영업일수</span></div>
+      <div><b>대상점포</b><span>832점 · 6개 중점 카테고리</span></div>
     </div>
   </header>
 
   <section>
     <div class="sec-h"><span class="num">핵심</span><h2>한눈에 보는 결론</h2></div>
-    <p class="sec-desc">영업일수를 보정한 <b>일매출 기준 전년비</b>로 보면, 대부분 카테고리는 전년 수준을 지켰고 <b>오직 하이볼·리큐르만 58.3%로 붕괴</b>했습니다. 이것이 목표 미달의 실질 원인입니다.</p>
+    <p class="sec-desc">중점 카테고리 실적은 <b>전년비 105.0%로 상회</b>하지만 <b>목표비 91.7%로 미달</b>입니다. 이유는 두 가지 — <b>①목표가 전년보다 +14.6% 높게</b> 잡혔고, <b>②하이볼·리큐르(전년비 67.9%)</b>가 성장을 갉아먹었기 때문입니다.</p>
     <div class="verdicts">
       <div class="vcard a">
-        <div class="tag">✓ 가설 확정 · 유일한 붕괴</div>
-        <div class="cat">하이볼·리큐르</div>
-        <div class="num">전년비 <b style="color:var(--crit)">58.3%</b> · 신장률 −41.7%</div>
-        <p>다른 품목은 84~100%인데 하이볼만 <b>홀로 반토막</b>. 9개 팀 전원 48~64%로 일제히 급감 — 지적하신 대로 부진의 진앙입니다.</p>
+        <div class="tag">◆ 현상 (원래 지적하신 대로)</div>
+        <div class="cat">전년비 105% ↔ 목표비 92%</div>
+        <div class="num">전년비 <b style="color:var(--good-ink)">105.0%</b> · 목표비 <b style="color:var(--warn)">91.7%</b></div>
+        <p>실적 214,904원 &gt; 전년 204,581원(성장). 그러나 목표 234,430원에는 −8.3% 미달 — 정확히 “전년比 상회, 목표 미달” 상황입니다.</p>
       </div>
       <div class="vcard b">
-        <div class="tag">◎ 전년 수준 방어</div>
-        <div class="cat">커피·면류는 선방</div>
-        <div class="num">커피 <b style="color:var(--good-ink)">100.1%</b> · 면류 98.4%</div>
-        <p>커피(자동)는 전년 상회, 면류는 사실상 보합. 맥주(국산 84%·수입 86%)도 완만한 감소로, <b>붕괴한 건 하이볼뿐</b>입니다.</p>
+        <div class="tag">▲ 원인 ① 목표가 높음</div>
+        <div class="cat">목표 = 전년 +14.6%</div>
+        <div class="num">목표는 전년의 <b style="color:var(--warn)">114.6%</b></div>
+        <p>목표가 전년비 <b>+14.6% 성장</b>을 요구. 실제는 <b>+5.0%</b> 성장에 그쳐 목표에 9.6%p 부족 → 달성률 91.7%. 목표선이 실제 성장 여력보다 높음.</p>
       </div>
       <div class="vcard c">
-        <div class="tag">◆ 목표 미달의 실체</div>
-        <div class="cat">목표 아닌 전년비</div>
-        <div class="num">목표대비 92.4% &nbsp;vs&nbsp; 전년비 86.1%</div>
-        <p>목표 미달(−7.6%)보다 <b>전년비 −13.9%</b>가 더 큼. 목표는 전년의 약 93% 수준으로 과하지 않으며, <b>실적 역신장</b>이 원인입니다.</p>
+        <div class="tag">▼ 원인 ② 하이볼 급락</div>
+        <div class="cat">하이볼·리큐르</div>
+        <div class="num">전년비 <b style="color:var(--crit)">67.9%</b> (−32.1%)</div>
+        <p>6개 중 <b>유일하게 전년 하회</b>. 9개 팀 전원 54~75%로 급락. 이 한 품목이 전체 전년비 성장을 약 <b>3%p</b> 끌어내림.</p>
       </div>
     </div>
     <div class="diag-lead">
-      <b>결론:</b> 지적하신 <b>하이볼 가설은 데이터로 확정</b>됩니다(일매출 전년비 58.3%, 전 팀 반토막, 감소 강도 4.4배). 다만 “목표가 너무 높다”기보다 <b>목표는 전년보다 낮게 잡혔는데 실적이 하이볼 붕괴로 그 아래로 빠진 것</b>이 정확한 구조입니다.
+      <b>한 줄 요약:</b> “전년보다 팔았지만(+5.0%) 목표(전년 +14.6%)엔 못 미쳤다.” 그 격차의 핵심 동인은 <b>하이볼·리큐르의 −32% 붕괴</b> — 나머지 카테고리는 대부분 전년을 넘겼습니다.
     </div>
   </section>
 
   <section>
-    <div class="sec-h"><span class="num">01</span><h2>카테고리별 전년비 (일매출 기준)</h2></div>
-    <p class="sec-desc">기준선 <b>100%(전년 동일 일매출)</b> 대비, 커피는 넘고 면류는 근접했지만 <b>하이볼·리큐르만 60% 아래로 홀로 무너졌습니다.</b></p>
+    <div class="sec-h"><span class="num">01</span><h2>목표 · 실적 · 전년 (점포당 일매출, 원)</h2></div>
+    <p class="sec-desc">셋을 나란히 보면 구조가 분명합니다. <b>실적은 전년을 넘었지만(+5.0%) 목표에는 미달(−8.3%)</b> — 목표가 전년보다 한참 위에 있기 때문입니다.</p>
+    <div class="tap" id="tap"></div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:14px;font-size:13px">
+      <span>목표 달성률 <b style="color:var(--warn);font-size:15px">91.7%</b> <span style="color:var(--ink-3)">(−19,526원)</span></span>
+      <span>전년 대비 <b style="color:var(--good-ink);font-size:15px">105.0%</b> <span style="color:var(--ink-3)">(+10,323원)</span></span>
+      <span>목표의 전년비 <b style="font-size:15px">114.6%</b> <span style="color:var(--ink-3)">(목표가 요구한 성장)</span></span>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-h"><span class="num">02</span><h2>소분류별 전년비 (점포당 일매출)</h2></div>
+    <p class="sec-desc">기준선 <b>100%(전년 수준)</b> 대비 — 5개 소분류는 전년을 넘었고, <b>하이볼·리큐르만 67.9%로 홀로 무너졌습니다.</b> 국산맥주(97.9%)는 거의 보합.</p>
     <div class="legend">
-      <span><i style="background:var(--crit)"></i>전년비 60% 미만(붕괴)</span>
-      <span><i style="background:var(--s2)"></i>80~90%(완만한 감소)</span>
-      <span><i style="background:var(--s3)"></i>95% 이상(전년 수준)</span>
+      <span><i style="background:var(--good)"></i>전년 상회(≥100%)</span>
+      <span><i style="background:var(--s4)"></i>보합(95~100%)</span>
+      <span><i style="background:var(--crit)"></i>부진(&lt;70%)</span>
       <span style="color:var(--ink-2)"><i style="background:var(--ink-1)"></i>세로선 = 전년 수준(100%)</span>
     </div>
-    <div class="chart-wrap" id="yoyChart"></div>
-    <p style="font-size:11px;color:var(--ink-3);margin:8px 0 0">※ 막대 안=전년비, 오른쪽=일매출(백만원/일) 2025→2026 및 증감.</p>
+    <div class="chart-wrap" id="catChart"></div>
+    <p style="font-size:11px;color:var(--ink-3);margin:8px 0 0">※ 값은 당신 수식(매출÷영업일수) 결과와 일치. 봉지면 15,601원·119.9% 재현 확인. 오른쪽=점포당 일매출(원/일).</p>
   </section>
 
   <section>
-    <div class="sec-h"><span class="num">02</span><h2>전년비 감소는 어디서 발생했나 (일 −26.9백만원)</h2></div>
-    <p class="sec-desc">일매출 기준 하루 <b>−26.9백만원</b> 감소. 절대액은 규모가 큰 <b>국산맥주(−12.5)</b>가 1위지만, <b>하이볼·리큐르는 일매출 구성비 6%인데 감소 기여 26.8%로 약 4.4배</b>의 압도적 감소 강도를 보입니다.</p>
-    <div class="stack" id="stack"></div>
-    <div class="stack-labs" id="stackLabs"></div>
-    <table style="margin-top:16px">
-      <thead><tr><th>카테고리</th><th class="num">25 일매출</th><th class="num">26 일매출</th><th class="num">전년비</th><th class="num">일 증감</th><th class="num">감소 기여도</th></tr></thead>
-      <tbody id="gapTbl"></tbody>
-    </table>
-    <p style="font-size:11px;color:var(--ink-3);margin:10px 0 0">※ 일매출 단위 백만원/일. 커피(자동)은 전년비 +0.1%로 사실상 감소 기여 없음.</p>
-  </section>
-
-  <section>
-    <div class="sec-h"><span class="num">03</span><h2>하이볼·리큐르 — 팀 전원이 반토막</h2></div>
-    <p class="sec-desc">9개 영업팀 <b>전부</b>가 일매출 전년비 48~64%. 특정 팀·점포가 아니라 <b>카테고리 수요 자체가 꺾인 구조적 신호</b>입니다 — 트렌드 소멸, 경쟁 심화, 진열·발주 축소 등 원인 진단이 시급합니다.</p>
+    <div class="sec-h"><span class="num">03</span><h2>하이볼·리큐르 — 9개 팀 전원 급락</h2></div>
+    <p class="sec-desc">전 팀이 전년비 <b>54~75%</b>. 특정 팀 문제가 아니라 <b>카테고리 수요 자체가 꺾인 구조</b>입니다 — 트렌드 하락·경쟁 심화·진열/발주 축소 등 원인 진단이 시급합니다.</p>
     <div class="chart-wrap" id="teamChart"></div>
   </section>
 
   <section>
-    <div class="sec-h"><span class="num">04</span><h2>두 개의 렌즈 — 목표대비 vs 전년비</h2></div>
-    <p class="sec-desc">같은 실적도 기준에 따라 심각도가 다릅니다. <b>전년비 낙폭(−13.9%)이 목표 미달(−7.6%)보다 큼</b> — 즉 목표가 과한 게 아니라 실적이 역신장 중이라는 뜻입니다.</p>
-    <div class="lenses">
-      <div class="lens mild">
-        <div class="lt">목표 대비 달성률 (일매출·전점)</div>
-        <div class="lv">92.4%</div>
-        <div class="ld">−7.6%p 미달 · 미경과 영업일 착시 보정 후 실질</div>
-      </div>
-      <div class="lens severe">
-        <div class="lt">전년 대비 (일매출·동일점)</div>
-        <div class="lv">86.1%</div>
-        <div class="ld">−13.9% 역신장 · 하이볼 58.3%가 낙폭 주도</div>
-      </div>
-    </div>
-    <div class="diag-lead blue" style="margin-top:16px">
-      <b>해석:</b> 목표는 전년 일매출의 약 93% 수준으로 설정돼 “공격적으로 높다”고 보기 어렵습니다. 그런데 실적이 전년의 86%까지 빠지면서 <b>그 목표선마저 하회</b> — 그 낙폭의 대부분이 <b>하이볼·리큐르(−41.7%)</b>에서 나왔습니다. 하이볼만 전년 수준으로 회복해도 목표 달성은 충분히 가능한 구조입니다.
-    </div>
+    <div class="sec-h"><span class="num">04</span><h2>영업팀별 목표비 vs 전년비</h2></div>
+    <p class="sec-desc"><b>전 팀이 전년비 98~110%(대체로 상회)이면서 목표비는 88~94%(전 팀 미달)</b> — 지역부 전체가 “전년比 상회·목표 미달” 구조로 동일합니다. 목표선이 일괄적으로 높다는 방증입니다.</p>
+    <table>
+      <thead><tr><th>영업팀</th><th class="num">점포수</th><th class="num">목표</th><th class="num">실적</th><th class="num">전년</th><th class="num">목표비</th><th class="num">전년비</th></tr></thead>
+      <tbody id="teamTbl"></tbody>
+    </table>
   </section>
 
   <section>
     <div class="sec-h"><span class="num">05</span><h2>결론 &amp; 개선 제언</h2></div>
+    <div class="diag-lead red">
+      <b>진단:</b> 목표 미달(91.7%)의 성격은 “실적 붕괴”가 아니라 <b>①공격적 목표(전년+14.6%)</b> + <b>②하이볼·리큐르 단일 품목의 −32% 급락</b>입니다. 나머지 5개 소분류는 전년을 넘겼습니다.
+    </div>
     <ul class="reco">
-      <li><span class="ic">1</span><b>하이볼·리큐르 회복이 1순위:</b> 유일한 붕괴 카테고리(58.3%)·전 팀 반토막·감소 강도 4.4배. <b>트렌드 하락, 경쟁사 동향, 진열·발주 축소</b>를 즉시 진단하고 핵심 SKU를 재정비해야 합니다.</li>
-      <li><span class="ic">2</span><b>맥주 완만한 감소 방어:</b> 국산 84%·수입 86%로 하루 −18.9백만원 감소(감소의 70%). 성수기 물량·행사 재점검으로 <b>추가 하락 차단</b>이 필요합니다.</li>
-      <li><span class="ic">3</span><b>지표는 반드시 일매출·전년비 병기:</b> 목표대비(92.4%)만 보면 위기의 실체(하이볼 붕괴)를 놓칩니다. <b>일매출 전년비(86.1%)</b>를 주 지표로 함께 보고해야 합니다.</li>
-      <li><span class="ic">4</span><b>목표 하향은 후순위:</b> 목표는 전년보다 낮게 잡혀 과하지 않음. 목표를 낮추기보다 <b>하이볼 수요 방어</b>에 자원을 집중하는 것이 옳은 방향입니다.</li>
+      <li><span class="ic">1</span><b>하이볼·리큐르 회복이 최우선:</b> 6개 중 유일한 전년 하회(67.9%)·전 팀 급락. <b>트렌드 하락, 경쟁사 동향, 진열·발주 축소</b>를 즉시 진단해 핵심 SKU를 재정비하면 전체 전년비·목표 달성이 동시에 개선됩니다.</li>
+      <li><span class="ic">2</span><b>목표 설정 적정성 재검토:</b> 실제 성장 여력(+5%)을 크게 웃도는 <b>전년 +14.6% 목표</b>가 전 팀 미달의 공통 원인. 카테고리별 성장 추세를 반영해 목표선 현실화를 검토합니다.</li>
+      <li><span class="ic">3</span><b>강세 품목 모멘텀 유지:</b> 봉지면(119.9%)·커피(116.8%)·용기면(112.4%) 등은 전년을 크게 상회 중. 이 성장세를 지켜 하이볼 부진을 상쇄해야 합니다.</li>
+      <li><span class="ic">4</span><b>지표 병기:</b> 목표비(91.7%)와 전년비(105.0%)를 함께 보고해 “전년 성장 중 목표 미달”의 실체를 정확히 공유합니다.</li>
     </ul>
   </section>
 
   <footer class="rep">
-    데이터 출처: 각 영업팀 전년비 자료(2025.7 vs 2026.7, 수원지역부) + 7월 중점 카테고리 현황 · 면류=기타면류+봉지면+용기면 합산<br>
-    ※ <b>실적 비교는 일매출(총매출÷영업일수) 기준</b> — 2025.7=31영업일, 2026.7=27영업일로 보정. 동일점(기존점) 누계 기준. 목표대비 92.4%는 일매출·전점 기준. (총액 단순비교 시 전년비 75.0%이나 영업일수 차이로 과대 표시됨)
+    데이터 출처: '3.중점CAT' (수원지역부, 2026.07.01~07.23 vs 2025.07.01~07.31) · 점포당 일매출 = 매출액 ÷ 영업일수(V3)<br>
+    ※ 소분류 = 봉지면·용기면·기타면류(=면류)·국산맥주·수입맥주·하이볼,리큐르·커피(자동). 전년비·목표비는 시트 공식 KPI값과 일치.
   </footer>
 </div>
 <div class="tip" id="tip"></div>
 
 <script>
-// 일매출 기준(백만원/일)
-const YOY=[
-  {name:'하이볼·리큐르', d25:17.3, d26:10.1, yoy:58.3, drop:26.8, sev:'crit'},
-  {name:'국산맥주',     d25:77.7, d26:65.2, yoy:84.0, drop:46.4, sev:'mid'},
-  {name:'수입맥주',     d25:45.8, d26:39.4, yoy:86.0, drop:23.9, sev:'mid'},
-  {name:'면류',         d25:48.2, d26:47.5, yoy:98.4, drop:2.9,  sev:'ok'},
-  {name:'커피(자동)',   d25:4.5,  d26:4.5,  yoy:100.1,drop:0.0,  sev:'ok'},
+const TAP=[
+  {lb:'목표', v:234430, c:'var(--s1)'},
+  {lb:'실적', v:214904, c:'var(--warn)'},
+  {lb:'전년', v:204581, c:'var(--ink-3)'},
 ];
-const COL={crit:'var(--crit)',mid:'var(--s2)',ok:'var(--s3)'};
-const Cc={'하이볼·리큐르':'var(--crit)','국산맥주':'var(--s1)','수입맥주':'var(--s3)','면류':'var(--s2)','커피(자동)':'var(--s5)'};
+const CAT=[  // 점포당 일매출 전년비
+  {name:'기타면류', yoy:139.5, d26:1429},
+  {name:'봉지면',   yoy:119.9, d26:15601},
+  {name:'커피(자동)',yoy:116.8, d26:5842},
+  {name:'용기면',   yoy:112.4, d26:44179},
+  {name:'수입맥주', yoy:100.3, d26:50759},
+  {name:'국산맥주', yoy:97.9,  d26:84131},
+  {name:'하이볼·리큐르', yoy:67.9, d26:12964},
+];
 const TEAM=[
-  {t:'수원영업9팀',y:48.2},{t:'수원영업8팀',y:52.9},{t:'수원영업7팀',y:53.8},
-  {t:'수원영업3팀',y:57.3},{t:'수원영업2팀',y:57.4},{t:'수원영업6팀',y:58.7},
-  {t:'수원영업5팀',y:61.9},{t:'수원영업1팀',y:62.2},{t:'수원영업4팀',y:64.1},
+  {t:'수원영업9팀',y:54.1},{t:'수원영업8팀',y:61.4},{t:'수원영업6팀',y:62.5},
+  {t:'수원영업3팀',y:64.8},{t:'수원영업7팀',y:68.5},{t:'수원영업5팀',y:68.9},
+  {t:'수원영업2팀',y:70.2},{t:'수원영업1팀',y:73.9},{t:'수원영업4팀',y:75.4},
 ];
-
+const TT=[
+  {t:'수원영업1팀',n:135,m:254938,s:236356,p:221789,mb:92.7,yb:106.6},
+  {t:'수원영업2팀',n:143,m:264980,s:241662,p:234254,mb:91.2,yb:103.2},
+  {t:'수원영업3팀',n:83, m:209783,s:188035,p:190001,mb:89.6,yb:99.0},
+  {t:'수원영업4팀',n:86, m:255759,s:226445,p:216075,mb:88.5,yb:104.8},
+  {t:'수원영업5팀',n:90, m:233039,s:211380,p:214255,mb:90.7,yb:98.7},
+  {t:'수원영업6팀',n:84, m:272177,s:249458,p:251506,mb:91.7,yb:99.2},
+  {t:'수원영업7팀',n:79, m:257922,s:240156,p:219271,mb:93.1,yb:109.5},
+  {t:'수원영업8팀',n:82, m:184814,s:166763,p:169093,mb:90.2,yb:98.6},
+  {t:'수원영업9팀',n:50, m:192781,s:180752,p:170236,mb:93.8,yb:106.2},
+];
 const tip=document.getElementById('tip');
 function showTip(e,h){tip.innerHTML=h;tip.style.opacity=1;moveTip(e);}
 function moveTip(e){const p=12;let x=e.clientX+p,y=e.clientY+p;
@@ -231,54 +233,57 @@ function moveTip(e){const p=12;let x=e.clientX+p,y=e.clientY+p;
 function hideTip(){tip.style.opacity=0;}
 
 (function(){
-  const MAX=110; let h='';
-  YOY.forEach(d=>{
-    const w=d.yoy/MAX*100, ref=100/MAX*100, dd=(d.d26-d.d25);
-    h+=`<div class="bar-row" data-tip="<b>${d.name}</b><br>일매출 전년비 ${d.yoy}%<br>${d.d25} → ${d.d26} 백만원/일">
-      <div class="name">${d.name}</div>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${w}%;background:${COL[d.sev]}"><span class="inlab">${d.yoy}%</span></div>
-        <div class="ref100" style="left:${ref}%"><span class="rlab">전년 100</span></div>
-      </div>
-      <div class="val">${d.d25}→<b>${d.d26}</b> 백만/일 <span class="${dd<-0.05?'down':'flat'}">${dd>=0?'+':''}${dd.toFixed(1)}</span></div></div>`;
+  const MAX=Math.max(...TAP.map(d=>d.v));
+  let h='';
+  TAP.forEach(d=>{
+    h+=`<div class="tap-row" data-tip="<b>${d.lb}</b><br>${d.v.toLocaleString()}원/일·점">
+      <div class="lb">${d.lb}</div>
+      <div class="tap-track"><div class="tap-fill" style="width:${d.v/MAX*100}%;background:${d.c}"><span class="v">${d.v.toLocaleString()}</span></div></div>
+      <div class="rt">${d.lb==='실적'?'전년비 <b>105.0%</b>':d.lb==='목표'?'전년비 <b>114.6%</b>':'기준'}</div></div>`;
   });
-  document.getElementById('yoyChart').innerHTML=h;
+  document.getElementById('tap').innerHTML=h;
 })();
 
 (function(){
-  let s='',l='';
-  YOY.filter(d=>d.drop>0).forEach(d=>{
-    s+=`<div class="seg" style="width:${d.drop}%;background:${Cc[d.name]}" data-tip="<b>${d.name}</b><br>감소 기여도 ${d.drop}%">${d.drop>=6?d.drop+'%':''}</div>`;
+  const MAX=145; let h='';
+  CAT.forEach(d=>{
+    const w=d.yoy/MAX*100, ref=100/MAX*100;
+    const col=d.yoy<70?'var(--crit)':d.yoy<100?'var(--s4)':'var(--good)';
+    h+=`<div class="bar-row" data-tip="<b>${d.name}</b><br>점포당 일매출 전년비 ${d.yoy}%<br>2026: ${d.d26.toLocaleString()}원/일·점">
+      <div class="name">${d.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${col}"><span class="inlab">${d.yoy}%</span></div>
+        <div class="ref100" style="left:${ref}%"><span class="rlab">전년 100</span></div></div>
+      <div class="val"><b>${d.d26.toLocaleString()}</b> 원/일</div></div>`;
   });
-  YOY.forEach(d=>{ l+=`<span><i style="background:${Cc[d.name]}"></i>${d.name} ${d.drop}%</span>`; });
-  document.getElementById('stack').innerHTML=s;
-  document.getElementById('stackLabs').innerHTML=l+`<span style="color:var(--crit);font-weight:700;margin-left:auto">맥주 합계 70.3%</span>`;
+  document.getElementById('catChart').innerHTML=h;
+})();
+
+(function(){
+  const MAX=80; let h='';
+  TEAM.forEach(d=>{
+    h+=`<div class="bar-row" style="grid-template-columns:118px 1fr 60px" data-tip="<b>${d.t}</b><br>하이볼·리큐르 전년비 ${d.y}%">
+      <div class="name">${d.t}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${d.y/MAX*100}%;background:var(--crit)"><span class="inlab">${d.y}%</span></div></div>
+      <div class="val" style="color:var(--crit);font-weight:700">${(d.y-100).toFixed(0)}%</div></div>`;
+  });
+  document.getElementById('teamChart').innerHTML=
+    `<div class="legend"><span style="color:var(--crit)"><i style="background:var(--crit)"></i>전 팀 전년비 54~75% · 지역부 평균 67.9%</span></div>`+h;
 })();
 
 (function(){
   let h='';
-  YOY.forEach(d=>{
-    const cls=d.yoy<60?'crit':d.yoy<95?'warn':'ok'; const dd=(d.d26-d.d25);
-    h+=`<tr><td><b>${d.name}</b></td><td class="num">${d.d25}</td><td class="num">${d.d26}</td>
-      <td class="num"><span class="pill ${cls}">${d.yoy}%</span></td>
-      <td class="num ${dd<-0.05?'down':'flat'}">${dd>=0?'+':''}${dd.toFixed(1)}</td><td class="num"><b>${d.drop}%</b></td></tr>`;
+  TT.forEach(d=>{
+    const mb=d.mb<90?'crit':d.mb<93?'warn':'warn';
+    const yb=d.yb>=100?'ok':'crit';
+    h+=`<tr><td><b>${d.t}</b></td><td class="num">${d.n}</td>
+      <td class="num">${d.m.toLocaleString()}</td><td class="num">${d.s.toLocaleString()}</td><td class="num">${d.p.toLocaleString()}</td>
+      <td class="num"><span class="pill warn">${d.mb}%</span></td>
+      <td class="num"><span class="pill ${yb}">${d.yb}%</span></td></tr>`;
   });
-  h+=`<tr style="border-top:2px solid var(--border-strong)"><td><b>합계</b></td><td class="num">193.5</td><td class="num">166.6</td>
-      <td class="num"><span class="pill warn">86.1%</span></td><td class="num down">−26.9</td><td class="num"><b>100%</b></td></tr>`;
-  document.getElementById('gapTbl').innerHTML=h;
-})();
-
-(function(){
-  const MAX=70; let h='';
-  TEAM.forEach(d=>{
-    const w=d.y/MAX*100;
-    h+=`<div class="bar-row" style="grid-template-columns:118px 1fr 60px" data-tip="<b>${d.t}</b><br>하이볼·리큐르 일매출 전년비 ${d.y}%">
-      <div class="name">${d.t}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${w}%;background:var(--crit)"><span class="inlab">${d.y}%</span></div></div>
-      <div class="val" style="color:var(--crit);font-weight:700">${(d.y-100).toFixed(0)}%</div></div>`;
-  });
-  document.getElementById('teamChart').innerHTML=
-    `<div class="legend"><span style="color:var(--crit)"><i style="background:var(--crit)"></i>전 팀 일매출 전년비 48~64% · 지역부 평균 58.3%</span><span style="color:var(--ink-3)">※ 막대=전년비, 오른쪽=신장률</span></div>`+h;
+  h+=`<tr style="border-top:2px solid var(--border-strong)"><td><b>수원지역부</b></td><td class="num">832</td>
+      <td class="num">234,430</td><td class="num">214,904</td><td class="num">204,581</td>
+      <td class="num"><span class="pill warn">91.7%</span></td><td class="num"><span class="pill ok">105.0%</span></td></tr>`;
+  document.getElementById('teamTbl').innerHTML=h;
 })();
 
 document.querySelectorAll('[data-tip]').forEach(el=>{

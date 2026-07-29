@@ -249,10 +249,10 @@ function renderSummary(){
 function mgmtCard(label,d){
   const gap=Math.round((d.yoy-d.target)*10)/10;
   return `<div class="mg-card">
-    <div class="mg-l">${label}</div>
-    <div class="mg-v tnum">${d.yoy}%<small>전년비</small></div>
+    <div class="mg-l">${label} <b style="opacity:.85">경영비</b></div>
+    <div class="mg-v tnum">${d.plan}%<small>경영계획 대비</small></div>
     <div class="mg-sub">
-      <span class="mchip ${d.plan>=100?'good':'bad'} tnum">경영비 ${d.plan}%</span>
+      <span class="mchip tnum" style="background:rgba(255,255,255,.85);color:#555">전년비 ${d.yoy}%</span>
       <span class="mchip ${gap>=0?'good':'warn'} tnum">지역부목표 ${d.target}% ${gap>=0?'▲':'▼'}${Math.abs(gap)}%p</span>
     </div></div>`;
 }

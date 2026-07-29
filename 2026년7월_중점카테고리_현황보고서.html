@@ -40,18 +40,17 @@
   .sec-h .num{font-family:var(--mono); font-size:13px; color:var(--s1); font-weight:700;}
   h2{font-size:18.5px; margin:0; font-weight:750; letter-spacing:-.01em;}
   .sec-desc{color:var(--ink-2); font-size:13.5px; margin:4px 0 18px;}
-  .verdicts{display:grid; grid-template-columns:1.05fr 1fr 1fr; gap:14px;}
+  .verdicts{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
   .vcard{border:1px solid var(--border); border-radius:12px; padding:18px; background:var(--surface-2); position:relative; overflow:hidden;}
   .vcard::before{content:''; position:absolute; left:0; top:0; bottom:0; width:5px;}
-  .vcard.a::before{background:var(--s1);} .vcard.b::before{background:var(--warn);} .vcard.c::before{background:var(--crit);}
+  .vcard.a::before{background:var(--s1);} .vcard.b::before{background:var(--crit);} .vcard.c::before{background:var(--warn);}
   .vcard .tag{font-size:11.5px; font-weight:800; letter-spacing:.03em; margin-bottom:8px;}
-  .vcard.a .tag{color:var(--s1);} .vcard.b .tag{color:var(--warn);} .vcard.c .tag{color:var(--crit);}
+  .vcard.a .tag{color:var(--s1);} .vcard.b .tag{color:var(--crit);} .vcard.c .tag{color:var(--warn);}
   .vcard .cat{font-size:19px; font-weight:800; letter-spacing:-.01em;}
   .vcard .num{font-size:13px; font-weight:700; margin:6px 0 6px; font-variant-numeric:tabular-nums;}
   .vcard p{font-size:12.5px; color:var(--ink-2); margin:0;}
   .diag-lead{background:var(--surface-2); border-left:4px solid var(--s1); border-radius:0 10px 10px 0; padding:14px 18px; font-size:14px; margin:18px 0 6px;}
   .diag-lead.red{border-left-color:var(--crit);} .diag-lead b{color:var(--ink-1);}
-  /* target/actual/prior bars */
   .tap{margin:6px 0 4px;}
   .tap-row{display:grid; grid-template-columns:64px 1fr 130px; align-items:center; gap:12px; margin:11px 0;}
   .tap-row .lb{font-size:13px; font-weight:700;}
@@ -72,6 +71,10 @@
   .ref100 .rlab{position:absolute; top:-15px; left:50%; transform:translateX(-50%); font-size:9.5px; font-weight:700; white-space:nowrap; color:var(--ink-2);}
   .bar-row .val{font-size:12px; text-align:right; font-variant-numeric:tabular-nums; color:var(--ink-2);}
   .bar-row .val b{color:var(--ink-1);}
+  .stack{display:flex; height:40px; border-radius:9px; overflow:hidden; border:1px solid var(--border); margin:6px 0 8px;}
+  .stack .seg{display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px; font-weight:800; min-width:2px;}
+  .stack-labs{display:flex; flex-wrap:wrap; gap:14px; font-size:12px; color:var(--ink-2); margin-top:4px;}
+  .stack-labs span{display:inline-flex; align-items:center; gap:6px;} .stack-labs i{width:10px;height:10px;border-radius:3px;}
   table{width:100%; border-collapse:collapse; font-size:13px; margin-top:4px;}
   th,td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--border);}
   th{font-size:11.5px; color:var(--ink-3); font-weight:700;}
@@ -81,6 +84,7 @@
   .pill.crit{background:rgba(208,59,59,.13); color:var(--crit);}
   .pill.warn{background:rgba(184,134,11,.15); color:var(--warn);}
   .pill.ok{background:rgba(12,163,12,.13); color:var(--good-ink);}
+  .down{color:var(--crit); font-weight:700;} .up{color:var(--good-ink); font-weight:700;}
   ul.reco{margin:6px 0 0; padding-left:0; list-style:none;}
   ul.reco li{padding:11px 0 11px 34px; border-bottom:1px solid var(--border); position:relative; font-size:13.5px; color:var(--ink-2);}
   ul.reco li:last-child{border-bottom:none;} ul.reco li b{color:var(--ink-1);}
@@ -97,7 +101,7 @@
   <header class="rep">
     <div class="eyebrow">중점 카테고리 KPI · 전년비 & 목표 진단 (점포당 일매출)</div>
     <h1>2026년 7월(1~23일) 중점 카테고리 현황 — 전년비는 상회, 목표는 미달인 이유</h1>
-    <div class="sub">수원지역부 · 전년비 105.0% 상회 ↔ 목표비 91.7% 미달 · 하이볼·리큐르가 성장 발목</div>
+    <div class="sub">수원지역부 · 목표 달성 최대 관건 = 맥주(파이 63%) · 성장률 진앙 = 하이볼·리큐르(−32%)</div>
     <div class="meta">
       <div><b>당해</b><span>2026.07.01 ~ 07.23 (23영업일)</span></div>
       <div><b>전년</b><span>2025.07.01 ~ 07.31 (31영업일)</span></div>
@@ -108,35 +112,35 @@
 
   <section>
     <div class="sec-h"><span class="num">핵심</span><h2>한눈에 보는 결론</h2></div>
-    <p class="sec-desc">중점 카테고리 실적은 <b>전년비 105.0%로 상회</b>하지만 <b>목표비 91.7%로 미달</b>입니다. 이유는 두 가지 — <b>①목표가 전년보다 +14.6% 높게</b> 잡혔고, <b>②하이볼·리큐르(전년비 67.9%)</b>가 성장을 갉아먹었기 때문입니다.</p>
+    <p class="sec-desc">중점 카테고리는 <b>전년비 105.0%로 상회</b>하지만 <b>목표비 91.7%로 미달</b>입니다. 원인은 성격이 다른 두 가지 — <b>①규모 최대인 맥주(파이 63%)의 목표 미달</b>, <b>②하이볼·리큐르의 성장률 급락(−32%)</b>이 겹쳤습니다.</p>
     <div class="verdicts">
       <div class="vcard a">
         <div class="tag">◆ 현상</div>
         <div class="cat">전년비 105% ↔ 목표비 92%</div>
         <div class="num">전년비 <b style="color:var(--good-ink)">105.0%</b> · 목표비 <b style="color:var(--warn)">91.7%</b></div>
-        <p>실적 214,904원 &gt; 전년 204,581원(성장). 그러나 목표 234,430원에는 −8.3% 미달 — 정확히 “전년比 상회, 목표 미달” 상황입니다.</p>
+        <p>실적 214,904원 &gt; 전년 204,581원(성장). 그러나 목표(전년 +14.6%인 234,430원)에는 −8.3% 미달.</p>
       </div>
       <div class="vcard b">
-        <div class="tag">▲ 원인 ① 목표가 높음</div>
-        <div class="cat">목표 = 전년 +14.6%</div>
-        <div class="num">목표는 전년의 <b style="color:var(--warn)">114.6%</b></div>
-        <p>목표가 전년비 <b>+14.6% 성장</b>을 요구. 실제는 <b>+5.0%</b> 성장에 그쳐 목표에 9.6%p 부족 → 달성률 91.7%. 목표선이 실제 성장 여력보다 높음.</p>
+        <div class="tag">① 목표 달성 최대 관건 · 규모</div>
+        <div class="cat">맥주 (국산+수입)</div>
+        <div class="num">파이 <b style="color:var(--crit)">62.8%</b> · 전년비 98.8%(보합)</div>
+        <p>실적의 <b>3분의 2</b>를 차지하는 맥주가 전년 수준에 머물러, <b>목표 부족액의 약 71%</b>를 유발. 목표를 움직이는 최대 레버.</p>
       </div>
       <div class="vcard c">
-        <div class="tag">▼ 원인 ② 하이볼 급락</div>
+        <div class="tag">② 성장률 진앙 · 신장률</div>
         <div class="cat">하이볼·리큐르</div>
-        <div class="num">전년비 <b style="color:var(--crit)">67.9%</b> (−32.1%)</div>
-        <p>6개 중 <b>유일하게 전년 하회</b>. 9개 팀 전원 54~75%로 급락. 이 한 품목이 전체 전년비 성장을 약 <b>3%p</b> 끌어내림.</p>
+        <div class="num">전년비 <b style="color:var(--warn)">67.9%</b> (−32.1%)</div>
+        <p>6개 중 유일한 전년 하회, 9개 팀 전원 급락. 규모(6%)는 작지만 <b>전체 성장률을 갉아먹는 진앙</b>.</p>
       </div>
     </div>
-    <div class="diag-lead">
-      <b>한 줄 요약:</b> “전년보다 팔았지만(+5.0%) 목표(전년 +14.6%)엔 못 미쳤다.” 그 격차의 핵심 동인은 <b>하이볼·리큐르의 −32% 붕괴</b> — 나머지 카테고리는 대부분 전년을 넘겼습니다.
+    <div class="diag-lead red">
+      <b>한 줄 요약:</b> “전년보다 팔았지만(+5.0%) 목표(전년 +14.6%)엔 못 미쳤다.” 목표 달성의 열쇠는 <b>파이의 63%인 맥주의 회복</b>이며, 성장률을 끌어내린 근본 원인은 <b>하이볼·리큐르의 −32% 급락</b>입니다.
     </div>
   </section>
 
   <section>
     <div class="sec-h"><span class="num">01</span><h2>목표 · 실적 · 전년 (점포당 일매출, 원)</h2></div>
-    <p class="sec-desc">셋을 나란히 보면 구조가 분명합니다. <b>실적은 전년을 넘었지만(+5.0%) 목표에는 미달(−8.3%)</b> — 목표가 전년보다 한참 위에 있기 때문입니다.</p>
+    <p class="sec-desc">셋을 나란히 보면 구조가 분명합니다. <b>실적은 전년을 넘었지만(+5.0%) 목표에는 미달(−8.3%)</b> — 목표가 전년보다 +14.6% 위에 설정됐기 때문입니다.</p>
     <div class="tap" id="tap"></div>
     <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:14px;font-size:13px">
       <span>목표 달성률 <b style="color:var(--warn);font-size:15px">91.7%</b> <span style="color:var(--ink-3)">(−19,526원)</span></span>
@@ -146,8 +150,20 @@
   </section>
 
   <section>
-    <div class="sec-h"><span class="num">02</span><h2>소분류별 전년비 (점포당 일매출)</h2></div>
-    <p class="sec-desc">기준선 <b>100%(전년 수준)</b> 대비 — 5개 소분류는 전년을 넘었고, <b>하이볼·리큐르만 67.9%로 홀로 무너졌습니다.</b> 국산맥주(97.9%)는 거의 보합.</p>
+    <div class="sec-h"><span class="num">02</span><h2>목표 부족액은 어디서 발생하나 (규모 가중)</h2></div>
+    <p class="sec-desc">목표 미달의 <b>절대 부족액</b>을 카테고리별로 배분하면, 파이가 큰 <b>맥주가 약 71%, 하이볼이 약 29%</b>를 차지합니다. 하이볼은 낙폭이 크지만 규모가 작고, 맥주는 규모가 커 보합만으로도 부족액이 가장 큽니다.</p>
+    <div class="stack" id="stack"></div>
+    <div class="stack-labs" id="stackLabs"></div>
+    <table style="margin-top:16px">
+      <thead><tr><th>소분류</th><th class="num">실적 파이</th><th class="num">전년비</th><th class="num">목표비(추정)</th><th class="num">목표 대비</th></tr></thead>
+      <tbody id="gapTbl"></tbody>
+    </table>
+    <p style="font-size:11px;color:var(--ink-3);margin:10px 0 0">※ 원자료에 소분류별 목표가 없어, 전사 목표성장률(+14.6%)을 각 소분류에 균등 적용해 추정한 값. “맥주 파이 62.8%·전년비 보합”은 가정과 무관한 확정 수치.</p>
+  </section>
+
+  <section>
+    <div class="sec-h"><span class="num">03</span><h2>소분류별 전년비 (점포당 일매출)</h2></div>
+    <p class="sec-desc">기준선 <b>100%(전년 수준)</b> 대비 — 5개 소분류는 전년을 넘었고, <b>하이볼·리큐르만 67.9%로 홀로 무너졌으며</b>, 규모가 가장 큰 <b>국산맥주(97.9%)는 보합</b>이라 전체 성장을 눌렀습니다.</p>
     <div class="legend">
       <span><i style="background:var(--good)"></i>전년 상회(≥100%)</span>
       <span><i style="background:var(--s4)"></i>보합(95~100%)</span>
@@ -159,14 +175,14 @@
   </section>
 
   <section>
-    <div class="sec-h"><span class="num">03</span><h2>하이볼·리큐르 — 9개 팀 전원 급락</h2></div>
+    <div class="sec-h"><span class="num">04</span><h2>하이볼·리큐르 — 9개 팀 전원 급락</h2></div>
     <p class="sec-desc">전 팀이 전년비 <b>54~75%</b>. 특정 팀 문제가 아니라 <b>카테고리 수요 자체가 꺾인 구조</b>입니다 — 트렌드 하락·경쟁 심화·진열/발주 축소 등 원인 진단이 시급합니다.</p>
     <div class="chart-wrap" id="teamChart"></div>
   </section>
 
   <section>
-    <div class="sec-h"><span class="num">04</span><h2>영업팀별 목표비 vs 전년비</h2></div>
-    <p class="sec-desc"><b>전 팀이 전년비 98~110%(대체로 상회)이면서 목표비는 88~94%(전 팀 미달)</b> — 지역부 전체가 “전년比 상회·목표 미달” 구조로 동일합니다. 목표선이 일괄적으로 높다는 방증입니다.</p>
+    <div class="sec-h"><span class="num">05</span><h2>영업팀별 목표비 vs 전년비</h2></div>
+    <p class="sec-desc"><b>전 팀이 전년비 98~110%(대체로 상회)이면서 목표비는 88~94%(전 팀 미달)</b> — 지역부 전체가 “전년比 상회·목표 미달” 구조로 동일합니다.</p>
     <table>
       <thead><tr><th>영업팀</th><th class="num">점포수</th><th class="num">목표</th><th class="num">실적</th><th class="num">전년</th><th class="num">목표비</th><th class="num">전년비</th></tr></thead>
       <tbody id="teamTbl"></tbody>
@@ -174,21 +190,21 @@
   </section>
 
   <section>
-    <div class="sec-h"><span class="num">05</span><h2>결론 &amp; 개선 제언</h2></div>
+    <div class="sec-h"><span class="num">06</span><h2>결론 &amp; 개선 제언</h2></div>
     <div class="diag-lead red">
-      <b>진단:</b> 목표 미달(91.7%)의 성격은 “실적 붕괴”가 아니라 <b>①공격적 목표(전년+14.6%)</b> + <b>②하이볼·리큐르 단일 품목의 −32% 급락</b>입니다. 나머지 5개 소분류는 전년을 넘겼습니다.
+      <b>진단:</b> 목표 미달(91.7%)은 “실적 붕괴”가 아니라 <b>①규모 최대 맥주(파이 63%)의 목표 미달(부족액 71%)</b>과 <b>②하이볼·리큐르 −32% 급락</b>이 겹친 결과입니다. 목표를 끌어올리는 레버는 <b>맥주</b>, 성장률 회복의 핵심은 <b>하이볼</b>입니다.
     </div>
     <ul class="reco">
-      <li><span class="ic">1</span><b>하이볼·리큐르 회복이 최우선:</b> 6개 중 유일한 전년 하회(67.9%)·전 팀 급락. <b>트렌드 하락, 경쟁사 동향, 진열·발주 축소</b>를 즉시 진단해 핵심 SKU를 재정비하면 전체 전년비·목표 달성이 동시에 개선됩니다.</li>
-      <li><span class="ic">2</span><b>목표 설정 적정성 재검토:</b> 실제 성장 여력(+5%)을 크게 웃도는 <b>전년 +14.6% 목표</b>가 전 팀 미달의 공통 원인. 카테고리별 성장 추세를 반영해 목표선 현실화를 검토합니다.</li>
-      <li><span class="ic">3</span><b>강세 품목 모멘텀 유지:</b> 봉지면(119.9%)·커피(116.8%)·용기면(112.4%) 등은 전년을 크게 상회 중. 이 성장세를 지켜 하이볼 부진을 상쇄해야 합니다.</li>
-      <li><span class="ic">4</span><b>지표 병기:</b> 목표비(91.7%)와 전년비(105.0%)를 함께 보고해 “전년 성장 중 목표 미달”의 실체를 정확히 공유합니다.</li>
+      <li><span class="ic">1</span><b>맥주 회복 = 목표 달성 최우선:</b> 파이 63%·목표 부족액의 71%. 국산(97.9%)·수입(100.3%)이 전년 보합에 머문 원인(가격·행사·매대)을 점검해 <b>두 자릿수 성장으로 전환</b>하면 목표 달성률 개선폭이 가장 큽니다.</li>
+      <li><span class="ic">2</span><b>하이볼·리큐르 급락 방어:</b> 6개 중 유일한 역신장(67.9%)·전 팀 급락. <b>트렌드 하락, 경쟁사 동향, 진열·발주 축소</b>를 즉시 진단해 성장률 진앙을 차단합니다.</li>
+      <li><span class="ic">3</span><b>강세 품목 모멘텀 유지:</b> 봉지면(119.9%)·커피(116.8%)·용기면(112.4%)은 전년을 크게 상회 중. 이 성장세를 지켜 맥주·하이볼 부진을 상쇄합니다.</li>
+      <li><span class="ic">4</span><b>목표 설정 적정성 재검토:</b> 실제 성장 여력(+5%)을 웃도는 전년 +14.6% 목표가 전 팀 미달의 공통 원인. 카테고리별 성장 추세를 반영한 목표 현실화를 병행 검토합니다.</li>
     </ul>
   </section>
 
   <footer class="rep">
     데이터 출처: '3.중점CAT' (수원지역부, 2026.07.01~07.23 vs 2025.07.01~07.31) · 점포당 일매출 = 매출액 ÷ 영업일수(V3)<br>
-    ※ 소분류 = 봉지면·용기면·기타면류(=면류)·국산맥주·수입맥주·하이볼,리큐르·커피(자동). 전년비·목표비는 시트 공식 KPI값과 일치.
+    ※ 소분류 = 봉지면·용기면·기타면류(=면류)·국산맥주·수입맥주·하이볼,리큐르·커피(자동). 전년비·목표비는 시트 공식 KPI값과 일치. 소분류별 목표비·목표부족은 전사 목표성장률 균등 적용 추정.
   </footer>
 </div>
 <div class="tip" id="tip"></div>
@@ -199,14 +215,28 @@ const TAP=[
   {lb:'실적', v:214904, c:'var(--warn)'},
   {lb:'전년', v:204581, c:'var(--ink-3)'},
 ];
+// 목표 부족액 기여 (규모 가중, 추정)
+const GAP=[
+  {name:'맥주(국산+수입)', pie:62.8, yoy:98.8, mokbi:86.2, contrib:71, c:'var(--crit)'},
+  {name:'하이볼·리큐르', pie:6.0, yoy:67.9, mokbi:59.3, contrib:29, c:'var(--warn)'},
+];
 const CAT=[  // 점포당 일매출 전년비
-  {name:'기타면류', yoy:139.5, d26:1429},
+  {name:'기타면류', yoy:139.6, d26:1429},
   {name:'봉지면',   yoy:119.9, d26:15601},
   {name:'커피(자동)',yoy:116.8, d26:5842},
   {name:'용기면',   yoy:112.4, d26:44179},
   {name:'수입맥주', yoy:100.3, d26:50759},
   {name:'국산맥주', yoy:97.9,  d26:84131},
   {name:'하이볼·리큐르', yoy:67.9, d26:12964},
+];
+const CATTBL=[
+  {name:'국산맥주', pie:39.1, yoy:97.9,  mokbi:85.5, gap:'−14,300'},
+  {name:'수입맥주', pie:23.6, yoy:100.3, mokbi:87.5, gap:'−7,240'},
+  {name:'하이볼·리큐르', pie:6.0, yoy:67.9, mokbi:59.3, gap:'−8,900'},
+  {name:'용기면',   pie:20.6, yoy:112.4, mokbi:98.1, gap:'−870'},
+  {name:'봉지면',   pie:7.3,  yoy:119.9, mokbi:104.7,gap:'+690'},
+  {name:'커피(자동)',pie:2.7, yoy:116.8, mokbi:101.9,gap:'+110'},
+  {name:'기타면류', pie:0.7,  yoy:139.6, mokbi:121.8,gap:'+260'},
 ];
 const TEAM=[
   {t:'수원영업9팀',y:54.1},{t:'수원영업8팀',y:61.4},{t:'수원영업6팀',y:62.5},
@@ -233,8 +263,7 @@ function moveTip(e){const p=12;let x=e.clientX+p,y=e.clientY+p;
 function hideTip(){tip.style.opacity=0;}
 
 (function(){
-  const MAX=Math.max(...TAP.map(d=>d.v));
-  let h='';
+  const MAX=Math.max(...TAP.map(d=>d.v)); let h='';
   TAP.forEach(d=>{
     h+=`<div class="tap-row" data-tip="<b>${d.lb}</b><br>${d.v.toLocaleString()}원/일·점">
       <div class="lb">${d.lb}</div>
@@ -242,6 +271,31 @@ function hideTip(){tip.style.opacity=0;}
       <div class="rt">${d.lb==='실적'?'전년비 <b>105.0%</b>':d.lb==='목표'?'전년비 <b>114.6%</b>':'기준'}</div></div>`;
   });
   document.getElementById('tap').innerHTML=h;
+})();
+
+// 목표 부족액 stacked
+(function(){
+  let s='',l='';
+  GAP.forEach(d=>{
+    s+=`<div class="seg" style="width:${d.contrib}%;background:${d.c}" data-tip="<b>${d.name}</b><br>목표 부족액 기여 ${d.contrib}%<br>파이 ${d.pie}% · 전년비 ${d.yoy}%">${d.name.replace('(국산+수입)','')} ${d.contrib}%</div>`;
+    l+=`<span><i style="background:${d.c}"></i>${d.name} — 부족액 ${d.contrib}%</span>`;
+  });
+  document.getElementById('stack').innerHTML=s;
+  document.getElementById('stackLabs').innerHTML=l+`<span style="color:var(--ink-3);margin-left:auto">면류·커피는 목표 초과로 부족분 일부 상쇄</span>`;
+})();
+
+// 목표대비 table
+(function(){
+  let h='';
+  CATTBL.forEach(d=>{
+    const cls=d.mokbi>=100?'ok':d.mokbi>=95?'warn':'crit';
+    const gcls=d.gap.startsWith('+')?'up':'down';
+    h+=`<tr><td><b>${d.name}</b></td><td class="num">${d.pie}%</td>
+      <td class="num">${d.yoy}%</td>
+      <td class="num"><span class="pill ${cls}">${d.mokbi}%</span></td>
+      <td class="num ${gcls}">${d.gap}</td></tr>`;
+  });
+  document.getElementById('gapTbl').innerHTML=h;
 })();
 
 (function(){
@@ -273,7 +327,6 @@ function hideTip(){tip.style.opacity=0;}
 (function(){
   let h='';
   TT.forEach(d=>{
-    const mb=d.mb<90?'crit':d.mb<93?'warn':'warn';
     const yb=d.yb>=100?'ok':'crit';
     h+=`<tr><td><b>${d.t}</b></td><td class="num">${d.n}</td>
       <td class="num">${d.m.toLocaleString()}</td><td class="num">${d.s.toLocaleString()}</td><td class="num">${d.p.toLocaleString()}</td>

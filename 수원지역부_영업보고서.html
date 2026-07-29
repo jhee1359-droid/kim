@@ -379,11 +379,11 @@ function renderConv(){
   const rice=REPORT.rice.region, sand=REPORT.sand.region;
   const riceN=REPORT.rice_non.region, sandN=REPORT.sand_non.region;
   const rgap=Math.round((rice.yoy-riceN.yoy)*10)/10, sgap=Math.round((sand.yoy-sandN.yoy)*10)/10;
-  let html=convBlock(REPORT.rice,"① 주먹밥 + 음료 행사","4",riceN);
+  let html=convBlock(REPORT.rice,"① 주먹밥 + 음료 행사","4");
   html+=insight("주먹밥 해석",[
-    `진행점 전년비 <b>${rice.yoy}%</b> vs 미진행점 <b>${riceN.yoy}%</b> → 초과분 <b class="b">${rgap}%p</b> — 행사점이 오히려 낮음. 진행점 다수가 이미 고매출·성숙점(성장률 둔화)이거나, 장마·행사 피로 영향으로 추정.`,
-    `전월비 <b>${rice.mom}%</b>로 6월 대비 하락(간헐적 장마). 최고 성장: ${topN(REPORT.rice.teams,'yoy',2)} / 개선 필요: ${botN(REPORT.rice.teams,'yoy',2)}.`,
-    `➡ 제언 : 고매출 성숙점 위주 진행점을 <b>저매출·성장여력 점포로 재배치</b>하면 행사 효과(초과분) 개선 여지.`,
+    `진행점 전년비 <b>${rice.yoy}%</b>로 전년 대비 성장했으나, 전월비 <b>${rice.mom}%</b>로 6월 대비 하락 — 7월 초·중순 <b>간헐적 장마</b>로 간편식 수요 둔화 영향.`,
+    `최고 성장: ${topN(REPORT.rice.teams,'yoy',2)} / 개선 필요: ${botN(REPORT.rice.teams,'yoy',2)}.`,
+    `➡ 제언 : 저성장 팀·점포 중심으로 삼각김밥+음료 증정행사·모음진열 재점검.`,
   ]);
   html+=convBlock(REPORT.sand,"② 헬시플레저 샌드위치","4",sandN);
   html+=insight("헬시플레저 해석",[
@@ -420,12 +420,6 @@ function lineChart(series,labels){
   let g="";
   for(let k=0;k<=3;k++){const v=mn+rg*k/3,yy=Y(v);g+=`<line x1="${pL}" y1="${yy}" x2="${W-pR}" y2="${yy}" stroke="var(--line)" stroke-width="1"/><text x="${pL-5}" y="${yy+3}" font-size="9" fill="var(--muted)" text-anchor="end">${v.toFixed(1)}</text>`;}
   labels.forEach((l,i)=>{ if(i%2===0||i===n-1) g+=`<text x="${X(i)}" y="${H-pB+14}" font-size="8" fill="var(--muted)" text-anchor="middle">${l}</text>`; });
-  // 라심발리 도입 시작 표시선 (25.12)
-  const mi=labels.indexOf("25.12");
-  if(mi>=0){ const mx2=X(mi);
-    g+=`<line x1="${mx2}" y1="${pT}" x2="${mx2}" y2="${H-pB}" stroke="var(--warn)" stroke-width="1.4" stroke-dasharray="4 3"/>`+
-       `<text x="${mx2+4}" y="${pT+9}" font-size="8.5" font-weight="800" fill="var(--warn)">라심발리 도입 시작</text>`;
-  }
   series.forEach(s=>{
     const pts=s.data.map((v,i)=>v==null?null:`${X(i)},${Y(v)}`).filter(Boolean).join(" ");
     g+=`<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="2.5" stroke-linejoin="round"/>`;

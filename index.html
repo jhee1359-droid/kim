@@ -982,13 +982,24 @@ function updateMatchStatus(){
 function recompute(){
   var list=filtered();
   features.forEach(function(f){ f.__bucket=[]; });
-  var maps=[{},{},{},{}];
+  // 시(市)를 키에 포함 → 동명이동(예: 화성 청계동 vs 의왕 청계동)이 시를 넘어 섞이지 않음
+  // maps[0..3]: 시 일치 키 / maps[4..7]: 시 미상 폴백 키
+  var maps=[{},{},{},{},{},{},{},{}];
+  function fk(city,gu,dong){
+    var ex=normTok(dong).replace(/\s+/g,''), bs=baseDong(dong), c=city||'';
+    return [c+'@'+(gu||'')+'#'+ex, c+'@'+(gu||'')+'#'+bs, c+'@#'+ex, c+'@#'+bs];
+  }
   features.forEach(function(f){
-    keyList(f.__gu,f.__dong).forEach(function(k,i){ (maps[i][k]=maps[i][k]||[]).push(f); });
+    fk(f.__city,f.__gu,f.__dong).forEach(function(k,i){ (maps[i][k]=maps[i][k]||[]).push(f); });   // 시 일치
+    keyList(f.__gu,f.__dong).forEach(function(k,i){ (maps[4+i][k]=maps[4+i][k]||[]).push(f); });     // 시 미상 폴백
   });
-  function lookup(gu,name){
-    var ks=keyList(gu,name);
-    for(var i=0;i<4;i++){ var a=maps[i][ks[i]]; if(a&&a.length) return {arr:a,isBase:(i===1||i===3)}; }
+  function lookup(city,gu,name){
+    if(city){ var kq=fk(city,gu,name);
+      for(var i=0;i<4;i++){ var a=maps[i][kq[i]]; if(a&&a.length) return {arr:a,isBase:(i===1||i===3)}; }
+      return null; // 시를 아는 점포는 같은 시에서만 매칭(교차 시 매칭 금지)
+    }
+    var ku=keyList(gu,name);
+    for(var j=0;j<4;j++){ var b=maps[4+j][ku[j]]; if(b&&b.length) return {arr:b,isBase:(j===1||j===3)}; }
     return null;
   }
   features.forEach(function(f){ f.__approx=false; });
@@ -1000,7 +1011,7 @@ function recompute(){
     var names=[s.adm], al=ALIAS[(s.gu||'')+'|'+normTok(s.adm)]||ALIAS[normTok(s.adm)];
     if(al) al.forEach(function(n){ if(names.indexOf(n)<0) names.push(n); });
     var hits=[], anyExact=false;
-    names.forEach(function(nm){ var r=lookup(s.gu||s.city,nm); if(r){ if(!r.isBase) anyExact=true; hits.push(r); } });
+    names.forEach(function(nm){ var r=lookup(s.city,s.gu,nm); if(r){ if(!r.isBase) anyExact=true; hits.push(r); } });
     if(hits.length){
       var chosen = anyExact ? hits.filter(function(h){return !h.isBase;}) : hits; // 정확일치 우선
       var feats=[]; chosen.forEach(function(h){ h.arr.forEach(function(f){ if(feats.indexOf(f)<0) feats.push(f); }); });

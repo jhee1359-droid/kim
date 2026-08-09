@@ -1,0 +1,489 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>수원지역부 영업팀 · 법정동 경영계획 지도</title>
+<style>
+/* ===== Leaflet (inlined) ===== */
+__LEAFLET_CSS__
+</style>
+<style>
+/* ===== App styles ===== */
+:root{
+  --bg:#0f1720; --panel:#f7f8fa; --line:#e3e7ec; --ink:#1b2430; --muted:#6b7684;
+  --accent:#2563eb; --accentw:#1d4ed8;
+  --r0:#d64545; --r1:#e8853a; --r2:#e8c13a; --r3:#7cc36b; --r4:#2f9e54; --rna:#c3c9d1;
+  --shadow:0 1px 3px rgba(16,24,40,.08),0 1px 2px rgba(16,24,40,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:"Pretendard","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;color:var(--ink);background:#eef1f5}
+#app{display:flex;height:100%;overflow:hidden}
+
+/* Sidebar */
+#side{width:390px;min-width:390px;height:100%;display:flex;flex-direction:column;background:var(--panel);border-right:1px solid var(--line)}
+#side header{padding:14px 16px 12px;border-bottom:1px solid var(--line);background:#fff}
+#side header h1{margin:0;font-size:16px;font-weight:800;letter-spacing:-.02em}
+#side header p{margin:3px 0 0;font-size:11.5px;color:var(--muted)}
+.controls{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px;background:#fff}
+.row{display:flex;gap:8px}
+.row>*{flex:1;min-width:0}
+label.fld{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--muted);font-weight:600}
+select,input[type=search]{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;font-size:13px;background:#fff;color:var(--ink);font-family:inherit}
+select:focus,input:focus{outline:2px solid #bfd3ff;border-color:var(--accent)}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{flex:1;border:0;background:#fff;padding:7px 4px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--accent);color:#fff}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);background:#fff}
+.kpi{background:#f4f6f9;border:1px solid var(--line);border-radius:10px;padding:9px 10px}
+.kpi .l{font-size:10.5px;color:var(--muted);font-weight:700}
+.kpi .v{font-size:19px;font-weight:800;letter-spacing:-.02em;margin-top:2px}
+.kpi .s{font-size:10.5px;color:var(--muted);margin-top:1px}
+
+/* Legend */
+.legend{padding:10px 16px;border-bottom:1px solid var(--line);background:#fff}
+.legend .t{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px}
+.legend .scale{display:flex;gap:0;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.legend .scale i{flex:1;height:16px}
+.legend .lab{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:3px}
+
+/* Detail panel */
+#detail{flex:1;overflow:auto;padding:12px 16px}
+#detail .empty{color:var(--muted);font-size:13px;text-align:center;margin-top:40px;line-height:1.7}
+.dhead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:4px}
+.dhead h2{margin:0;font-size:17px;font-weight:800}
+.dhead .gu{font-size:11.5px;color:var(--muted);font-weight:600}
+.dsum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 12px}
+.dsum .b{background:#f4f6f9;border:1px solid var(--line);border-radius:9px;padding:8px 10px}
+.dsum .b .l{font-size:10px;color:var(--muted);font-weight:700}
+.dsum .b .v{font-size:16px;font-weight:800;margin-top:2px}
+table.stbl{width:100%;border-collapse:collapse;font-size:12px}
+table.stbl th{position:sticky;top:-12px;background:var(--panel);text-align:left;font-size:10.5px;color:var(--muted);font-weight:700;padding:6px 6px;border-bottom:1px solid var(--line);cursor:pointer;white-space:nowrap}
+table.stbl th.num,table.stbl td.num{text-align:right}
+table.stbl td{padding:6px 6px;border-bottom:1px solid #eef1f4;vertical-align:top}
+table.stbl tr:hover td{background:#f0f5ff}
+.stname{font-weight:600}
+.stteam{font-size:10px;color:var(--muted)}
+.rate{font-weight:800;padding:1px 6px;border-radius:20px;color:#fff;font-size:11px;display:inline-block;min-width:52px;text-align:center}
+.na{color:var(--muted);font-weight:600}
+
+/* Map */
+#map{flex:1;height:100%;position:relative;background:#dfe6ee}
+.maptip{font-size:12px;font-weight:600}
+.maptip b{font-size:13px}
+#drop{position:absolute;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;background:rgba(15,23,32,.55);backdrop-filter:blur(1px)}
+#drop.show{display:flex}
+#drop .box{background:#fff;border-radius:14px;padding:26px 30px;text-align:center;box-shadow:var(--shadow);max-width:420px}
+#drop .box h3{margin:0 0 6px;font-size:16px}
+#drop .box p{margin:0 0 14px;font-size:12.5px;color:var(--muted);line-height:1.7}
+.btn{display:inline-block;background:var(--accent);color:#fff;border:0;border-radius:9px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+#status{position:absolute;left:10px;bottom:10px;z-index:900;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:11.5px;color:var(--muted);box-shadow:var(--shadow);max-width:60%}
+#status b{color:var(--ink)}
+.leaflet-container{font-family:inherit}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;background:#eef2f7;color:var(--muted);margin-left:6px}
+@media (max-width:780px){
+  #app{flex-direction:column}
+  #side{width:100%;min-width:0;height:46%;order:2;border-right:0;border-top:1px solid var(--line)}
+  #map{order:1;height:54%}
+}
+</style>
+
+<div id="app">
+  <aside id="side">
+    <header>
+      <h1>수원지역부 · 법정동 경영계획 지도</h1>
+      <p>영업팀 · 법정동 기준 실행계획 · 점포별 달성률 <span id="asof"></span></p>
+    </header>
+
+    <div class="controls">
+      <div class="row">
+        <label class="fld">시/군
+          <select id="fCity"></select>
+        </label>
+        <label class="fld">영업팀
+          <select id="fTeam"></select>
+        </label>
+      </div>
+      <label class="fld">지표 (색상 기준)
+        <div class="seg" id="metric">
+          <button data-m="tot" class="on">총매출 달성률</button>
+          <button data-m="day">일매출 달성률</button>
+        </div>
+      </label>
+      <label class="fld">검색 (행정동 · 점포명)
+        <input type="search" id="fSearch" placeholder="예: 인계동, 매탄, 우만 …" autocomplete="off">
+      </label>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="legend">
+      <div class="t">달성률 색상</div>
+      <div class="scale">
+        <i style="background:var(--r0)"></i><i style="background:var(--r1)"></i>
+        <i style="background:var(--r2)"></i><i style="background:var(--r3)"></i>
+        <i style="background:var(--r4)"></i>
+      </div>
+      <div class="lab"><span>&lt;90%</span><span>95</span><span>100</span><span>105</span><span>≥110%</span></div>
+    </div>
+
+    <div id="detail"><div class="empty">지도의 <b>동(법정동)</b>을 클릭하면<br>해당 동의 점포 목록과<br>점포별 달성률이 표시됩니다.</div></div>
+  </aside>
+
+  <div id="map">
+    <div id="drop">
+      <div class="box">
+        <h3>경계 파일 불러오기</h3>
+        <p><b>행정동/법정동 경계 GeoJSON</b>을 이 지도 위로 드래그하거나 버튼으로 선택하세요.<br><b>법정동→행정동 연계표(JSON)</b>도 같은 방식으로 불러오면 정확 배분됩니다.<br>불러오지 않아도 왼쪽 통계·점포 데이터는 사용할 수 있습니다.</p>
+        <button class="btn" id="pickBtn">파일 선택</button>
+        <button class="btn ghost" id="skipBtn">나중에</button>
+        <input type="file" id="fileInput" accept=".json,.geojson,application/json" style="display:none">
+      </div>
+    </div>
+    <div id="status"></div>
+  </div>
+</div>
+
+<script>
+/* ===== Leaflet (inlined) ===== */
+__LEAFLET_JS__
+</script>
+<script>
+/* ===== Embedded store data ===== */
+__STORE_DATA__
+</script>
+<script>
+/* ===== App ===== */
+(function(){
+"use strict";
+var STORES = (window.STORE_DATA && window.STORE_DATA.stores) || [];
+var META = (window.STORE_DATA && window.STORE_DATA.meta) || {};
+document.getElementById('asof').textContent = META.source ? '· '+META.source : '';
+
+/* ---- helpers ---- */
+function normTok(s){ if(!s) return ''; s=String(s).trim(); var p=s.split(/\s+/); return p[p.length-1]; }
+function baseDong(s){ // 행정동↔법정동 근사: 정자1동→정자동, 매산로1가→매산로가
+  return normTok(s).replace(/([가-힣])\d+(동|가|로|리)$/, '$1$2');
+}
+function fmtEok(v){ if(v==null) return '-'; return (v/1e8).toFixed(1)+'억'; }
+function fmtPct(r){ return r==null ? 'N/A' : (r*100).toFixed(1)+'%'; }
+function rateColor(r){
+  if(r==null) return getComputedStyle(document.documentElement).getPropertyValue('--rna');
+  var p=r*100;
+  if(p<90) return cssv('--r0'); if(p<95) return cssv('--r1'); if(p<100) return cssv('--r2');
+  if(p<105) return cssv('--r3'); return cssv('--r4');
+}
+function cssv(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+/* ---- aggregation of a set of stores ---- */
+function aggregate(list){
+  var v1s=0,v1d=0,v3s=0,v3d=0,withPlan=0;
+  list.forEach(function(s){
+    v1s+=s.planSales||0; v1d+=s.planDays||0; v3s+=s.actSales||0; v3d+=s.actDays||0;
+    if(s.planSales) withPlan++;
+  });
+  var tot = v1s? v3s/v1s : null;
+  var planDaily = v1d? v1s/v1d : null, actDaily = v3d? v3s/v3d : null;
+  var day = (planDaily&&actDaily)? actDaily/planDaily : null;
+  return {n:list.length, withPlan:withPlan, planSales:v1s, actSales:v3s, tot:tot, day:day};
+}
+
+/* ---- current filter state ---- */
+var state = { city:'', team:'', metric:'tot', search:'' };
+function filtered(){
+  return STORES.filter(function(s){
+    if(state.city && s.city!==state.city) return false;
+    if(state.team && s.team!==state.team) return false;
+    return true;
+  });
+}
+
+
+/* ============ MAP ============ */
+var map = L.map('map',{zoomControl:true,preferCanvas:false}).setView([37.28,127.02],11);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  maxZoom:19, attribution:'&copy; OpenStreetMap', opacity:.55
+}).addTo(map);
+
+var geoLayer=null, features=[], matched=false;
+// 주소상의 동 → 경계파일의 동 이름 연계표. key="구|동" 또는 "동", value=[대상 동,...]
+// 기본값: 법정동 경계 기준에서 명칭이 다른 소수 케이스(수원 행정동전용 주소) 보정
+var DEFAULT_ALIAS={"광교1동":["이의동"],"광교2동":["하동"],"행궁동":["북수동"]};
+var ALIAS={};
+function cloneAlias(src){ var o={}; for(var k in src) o[k]=src[k].slice(); return o; }
+function loadAlias(obj){
+  ALIAS=cloneAlias(DEFAULT_ALIAS);
+  function put(k,v){ var a=ALIAS[k]||(ALIAS[k]=[]); (Array.isArray(v)?v:[v]).forEach(function(x){ if(a.indexOf(x)<0) a.push(x); }); }
+  if(Array.isArray(obj)){
+    obj.forEach(function(r){
+      var gu=r.gu||r.구||'', b=r.beopjeong||r.법정동||r.b||'', h=r.haengjeong||r.행정동||r.h||'';
+      if(b&&h){ put((gu?gu+'|':'')+normTok(b),h); put(normTok(b),h); }
+    });
+  } else if(obj&&typeof obj==='object'){
+    for(var k in obj){ put(k.indexOf('|')>=0?k:normTok(k),obj[k]); if(k.indexOf('|')>=0) put(normTok(k.split('|').pop()),obj[k]); }
+  }
+  var n=Object.keys(ALIAS).length;
+  setStatus('법정동→행정동 연계표 <b>'+n+'</b>건 적용됨. 지도를 다시 계산합니다…');
+  if(features.length) recompute();
+  return n;
+}
+
+/* detect dong / gu names from a geojson feature */
+function featDong(props){
+  var keys=['adm_nm','ADM_NM','adm_dr_nm','ADM_DR_NM','EMD_KOR_NM','emd_kor_nm','EMD_NM',
+            'HANG_NM','hang_nm','DONG','dong','행정동','읍면동','ADM_DR_KO','name','NAME','법정동','동'];
+  for(var i=0;i<keys.length;i++){ if(props[keys[i]]!=null && String(props[keys[i]]).trim()) return String(props[keys[i]]); }
+  // fallback: first string prop
+  for(var k in props){ if(typeof props[k]==='string' && props[k].trim()) return props[k]; }
+  return '';
+}
+function featGu(props){
+  var keys=['sgg_nm','SGG_NM','SIG_KOR_NM','sig_kor_nm','gu','구','자치구'];
+  for(var i=0;i<keys.length;i++){ if(props[keys[i]]) { var t=String(props[keys[i]]); var m=t.match(/([가-힣]+구)\s*$/); return m?m[1]:t; } }
+  var full=featDong(props); var m2=full.match(/([가-힣]+구)/); return m2?m2[1]:'';
+}
+
+function styleFor(feat){
+  var st = feat.__stats;
+  var r = st ? st[state.metric] : null;
+  var has = st && st.n>0;
+  return {
+    color:'#ffffff', weight:1, opacity:1,
+    fillColor: has ? rateColor(r) : '#cfd6df',
+    fillOpacity: has ? .72 : .18
+  };
+}
+
+function loadGeoJSON(gj){
+  if(geoLayer){ map.removeLayer(geoLayer); }
+  features=[];
+  geoLayer = L.geoJSON(gj,{
+    style: styleFor,
+    onEachFeature: function(feature, layer){
+      feature.__dong = featDong(feature.properties||{});
+      feature.__gu   = featGu(feature.properties||{});
+      feature.__layer= layer;
+      features.push(feature);
+      layer.on({
+        mouseover:function(){ layer.setStyle({weight:2.5,color:'#1b2430'}); layer.bringToFront(); },
+        mouseout:function(){ geoLayer.resetStyle(layer); },
+        click:function(){ selectFeature(feature); }
+      });
+    }
+  }).addTo(map);
+  try{ map.fitBounds(geoLayer.getBounds(),{padding:[20,20]}); }catch(e){}
+  matched=true;
+  recompute();
+  document.getElementById('drop').classList.remove('show');
+}
+
+/* store↔feature matching keys, 우선순위: 구+정확 → 구+근사 → 정확 → 근사 */
+function keyList(gu,dong){
+  var ex=normTok(dong).replace(/\s+/g,''), bs=baseDong(dong);
+  return [(gu||'')+'#'+ex,(gu||'')+'#'+bs,'#'+ex,'#'+bs];
+}
+function updateMatchStatus(){
+  var mm=features.filter(function(f){return f.__stats&&f.__stats.n>0;}).length;
+  var u=window.__unmatched||{n:0,dongs:[]};
+  var extra=u.n? ' · <b>미매칭 점포 '+u.n+'</b>개('+u.dongs.slice(0,6).join(', ')+(u.dongs.length>6?' 외':'')+')':'';
+  setStatus('행정동 <b>'+features.length+'</b>개 · 점포연결 동 <b>'+mm+'</b>개'+extra);
+}
+
+/* recompute per-feature stats from current filter, restyle, refresh KPIs */
+function recompute(){
+  var list=filtered();
+  features.forEach(function(f){ f.__bucket=[]; });
+  var maps=[{},{},{},{}];
+  features.forEach(function(f){
+    keyList(f.__gu,f.__dong).forEach(function(k,i){ (maps[i][k]=maps[i][k]||[]).push(f); });
+  });
+  function lookup(gu,name){
+    var ks=keyList(gu,name);
+    for(var i=0;i<4;i++){ var a=maps[i][ks[i]]; if(a&&a.length) return {arr:a,isBase:(i===1||i===3)}; }
+    return null;
+  }
+  features.forEach(function(f){ f.__approx=false; });
+  var unmatchedN=0, unmatchedDongs={};
+  list.forEach(function(s){
+    s.__feat=null;
+    if(!s.adm){ unmatchedN++; return; }
+    // 법정동→행정동 연계표(있으면) 로 후보 행정동 이름 확장
+    var names = ALIAS[(s.gu||'')+'|'+normTok(s.adm)] || ALIAS[normTok(s.adm)] || [s.adm];
+    var hits=[], anyExact=false;
+    names.forEach(function(nm){ var r=lookup(s.gu||s.city,nm); if(r){ if(!r.isBase) anyExact=true; hits.push(r); } });
+    if(hits.length){
+      var chosen = anyExact ? hits.filter(function(h){return !h.isBase;}) : hits; // 정확일치 우선
+      var feats=[]; chosen.forEach(function(h){ h.arr.forEach(function(f){ if(feats.indexOf(f)<0) feats.push(f); }); });
+      // 법정동→여러 행정동 세분 불가 시: 해당하는 모든 행정동에 함께 표시
+      feats.forEach(function(f){ f.__bucket.push(s); if(normTok(f.__dong)!==normTok(s.adm) && !(ALIAS[normTok(s.adm)])) f.__approx=true; });
+      s.__feat=feats[0];
+    } else { unmatchedN++; unmatchedDongs[(s.gu?s.gu+' ':'')+s.adm]=1; }
+  });
+  features.forEach(function(f){ f.__stats=f.__bucket.length?aggregate(f.__bucket):null; if(f.__stats) f.__stats.stores=f.__bucket; });
+  if(geoLayer) geoLayer.setStyle(styleFor);
+  window.__unmatched={n:unmatchedN,dongs:Object.keys(unmatchedDongs)};
+  renderKPIs(list);
+  if(selected && selected.__stats && selected.__stats.n>0) renderDetail(selected);
+  else if(selected) renderDetailEmpty(selected);
+  if(features.length) updateMatchStatus();
+}
+
+/* ---- selection ---- */
+var selected=null;
+function selectFeature(feature){
+  selected=feature;
+  features.forEach(function(f){ if(f.__layer) geoLayer.resetStyle(f.__layer); });
+  if(feature.__layer){ feature.__layer.setStyle({weight:3,color:'#111827'}); feature.__layer.bringToFront(); }
+  if(feature.__stats && feature.__stats.n>0){ renderDetail(feature); }
+  else { renderDetailEmpty(feature); }
+  try{ map.fitBounds(feature.__layer.getBounds(),{padding:[40,40],maxZoom:14}); }catch(e){}
+}
+
+/* ============ RENDER ============ */
+function renderKPIs(list){
+  var a=aggregate(list);
+  var el=document.getElementById('kpis');
+  el.innerHTML =
+    kpi('점포수', a.n.toLocaleString()+'개', a.withPlan+'개 계획배정') +
+    kpi('행정동수', String(new Set(list.filter(function(s){return s.adm;}).map(function(s){return (s.gu||'')+baseDong(s.adm);})).size)+'개','') +
+    kpi('총매출 달성률', fmtPct(a.tot), fmtEok(a.actSales)+' / '+fmtEok(a.planSales)) +
+    kpi('일매출 달성률', fmtPct(a.day), '');
+}
+function kpi(l,v,s){ return '<div class="kpi"><div class="l">'+l+'</div><div class="v">'+v+'</div><div class="s">'+(s||'')+'</div></div>'; }
+
+var sortKey='tot', sortDir=1;
+function renderDetail(feature){
+  var st=feature.__stats, stores=st.stores.slice();
+  stores.sort(function(a,b){
+    var av,bv;
+    if(sortKey==='name'){ av=a.name||''; bv=b.name||''; return sortDir*av.localeCompare(bv,'ko'); }
+    av=(sortKey==='tot'?a.totRate:sortKey==='day'?a.dayRate:a.actSales); bv=(sortKey==='tot'?b.totRate:sortKey==='day'?b.dayRate:b.actSales);
+    if(av==null) av=-1; if(bv==null) bv=-1; return sortDir*(av-bv);
+  });
+  var teams=Array.from(new Set(stores.map(function(s){return s.team;}))).join(', ');
+  var h='';
+  h+='<div class="dhead"><h2>'+esc(feature.__dong)+'</h2><span class="gu">'+esc([feature.__gu||feature.__stats.stores[0].city].filter(Boolean).join(' '))+'</span></div>';
+  h+='<div style="font-size:11px;color:var(--muted)">'+esc(teams)+'</div>';
+  if(feature.__approx){ h+='<div style="font-size:10.5px;color:#b45309;background:#fff7ed;border:1px solid #fed7aa;border-radius:7px;padding:5px 8px;margin-top:6px;line-height:1.5">※ 점포 주소가 <b>법정동</b> 기준이라 행정동으로 세분되지 않아, 같은 법정동을 공유하는 행정동에 함께 표시됩니다. (정확 배분하려면 법정동→행정동 연계표 필요)</div>'; }
+  h+='<div class="dsum">'
+    + box('총매출 달성률', fmtPct(st.tot), rateColor(st.tot))
+    + box('일매출 달성률', fmtPct(st.day), rateColor(st.day))
+    + box('점포수', st.n+'개', null)
+    + box('계획 / 실적', fmtEok(st.planSales)+' / '+fmtEok(st.actSales), null)
+    +'</div>';
+  h+='<table class="stbl"><thead><tr>'
+    +'<th data-k="name">점포명</th>'
+    +'<th data-k="tot" class="num">총매출%</th>'
+    +'<th data-k="day" class="num">일매출%</th></tr></thead><tbody>';
+  stores.forEach(function(s){
+    h+='<tr><td><div class="stname">'+esc(s.name)+'</div><div class="stteam">'+esc(s.team)+(s.code?' · '+s.code:'')+'</div></td>'
+      +'<td class="num">'+rateBadge(s.totRate)+'</td>'
+      +'<td class="num">'+rateBadge(s.dayRate)+'</td></tr>';
+  });
+  h+='</tbody></table>';
+  var d=document.getElementById('detail'); d.innerHTML=h;
+  d.querySelectorAll('th[data-k]').forEach(function(th){
+    th.onclick=function(){ var k=th.getAttribute('data-k'); if(sortKey===k) sortDir*=-1; else {sortKey=k; sortDir=(k==='name'?1:-1);} renderDetail(feature); };
+  });
+}
+function renderDetailEmpty(feature){
+  document.getElementById('detail').innerHTML='<div class="dhead"><h2>'+esc(feature.__dong)+'</h2><span class="gu">'+esc(feature.__gu||'')+'</span></div><div class="empty" style="margin-top:24px">이 행정동에 연결된 점포가 없습니다.<br><span style="font-size:11px">(현재 필터 기준 · 법정동/행정동 명칭 차이일 수 있음)</span></div>';
+}
+function box(l,v,col){ return '<div class="b"><div class="l">'+l+'</div><div class="v" style="'+(col?'color:'+col:'')+'">'+v+'</div></div>'; }
+function rateBadge(r){ if(r==null) return '<span class="na">N/A</span>'; return '<span class="rate" style="background:'+rateColor(r)+'">'+(r*100).toFixed(1)+'</span>'; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+/* ---- tooltip binding on restyle: bind once per layer ---- */
+function bindTips(){
+  features.forEach(function(f){
+    if(!f.__layer || f.__tip) return; f.__tip=true;
+    f.__layer.bindTooltip(function(){
+      var st=f.__stats;
+      var r= st? st[state.metric]:null;
+      return '<div class="maptip"><b>'+esc(f.__dong)+'</b><br>'+
+        (st&&st.n? (st.n+'개 점포 · '+fmtPct(r)) : '점포 없음')+'</div>';
+    },{sticky:true});
+  });
+}
+
+/* ============ CONTROLS ============ */
+function initControls(){
+  var cities=Array.from(new Set(STORES.map(function(s){return s.city;}).filter(Boolean))).sort();
+  var teams=Array.from(new Set(STORES.map(function(s){return s.team;}).filter(Boolean))).sort();
+  fill('fCity','전체 시/군',cities);
+  fill('fTeam','전체 영업팀',teams);
+  document.getElementById('fCity').onchange=function(){ state.city=this.value; recompute(); };
+  document.getElementById('fTeam').onchange=function(){ state.team=this.value; recompute(); };
+  document.querySelectorAll('#metric button').forEach(function(b){
+    b.onclick=function(){ document.querySelectorAll('#metric button').forEach(function(x){x.classList.remove('on');}); b.classList.add('on'); state.metric=b.getAttribute('data-m'); if(geoLayer) geoLayer.setStyle(styleFor); renderKPIs(filtered()); };
+  });
+  document.getElementById('fSearch').oninput=function(){ doSearch(this.value.trim()); };
+}
+function fill(id,ph,arr){
+  var s=document.getElementById(id); s.innerHTML='<option value="">'+ph+'</option>';
+  arr.forEach(function(v){ var o=document.createElement('option'); o.value=v; o.textContent=v; s.appendChild(o); });
+}
+function doSearch(q){
+  if(!q||!features.length) return;
+  // match dong first
+  var f=features.find(function(f){ return f.__dong && f.__dong.indexOf(q)>=0; });
+  if(!f){
+    // match store name -> its matched feature
+    var s=filtered().find(function(s){ return s.name && s.name.indexOf(q)>=0; });
+    if(s && s.__feat){ f=s.__feat; }
+  }
+  if(f){ selectFeature(f); }
+}
+
+/* ============ FILE LOADING ============ */
+function setStatus(html){ document.getElementById('status').innerHTML=html; }
+function isGeo(o){ return o && (o.type==='FeatureCollection' || o.type==='Feature' || Array.isArray(o.features) || o.type==='GeometryCollection'); }
+function handleFile(file){
+  var rd=new FileReader();
+  rd.onload=function(){ try{
+      var o=JSON.parse(rd.result);
+      if(isGeo(o)){ loadGeoJSON(o); bindTips(); }
+      else { var n=loadAlias(o); alert('법정동→행정동 연계표 '+n+'건을 적용했습니다.'); }
+    } catch(e){ alert('JSON 파싱 실패: '+e.message); } };
+  rd.readAsText(file,'utf-8');
+}
+document.getElementById('pickBtn').onclick=function(){ document.getElementById('fileInput').click(); };
+document.getElementById('skipBtn').onclick=function(){ document.getElementById('drop').classList.remove('show'); };
+document.getElementById('fileInput').onchange=function(){ if(this.files[0]) handleFile(this.files[0]); };
+var mapEl=document.getElementById('map');
+['dragenter','dragover'].forEach(function(ev){ mapEl.addEventListener(ev,function(e){ e.preventDefault(); document.getElementById('drop').classList.add('show'); }); });
+document.getElementById('drop').addEventListener('dragleave',function(e){ if(e.target.id==='drop') this.classList.remove('show'); });
+mapEl.addEventListener('drop',function(e){ e.preventDefault(); document.getElementById('drop').classList.remove('show'); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+
+/* try auto-load candidates */
+function tryAuto(){
+  if(!/^https?:$/.test(location.protocol)){ // file:// 등에서는 자동 fetch 불가
+    document.getElementById('drop').classList.add('show');
+    setStatus('점포 <b>'+STORES.length+'</b>개 로드됨 · 행정동 경계 파일을 불러오세요 (드래그 또는 파일선택)');
+    return;
+  }
+  // 연계표(있으면) 먼저 자동 로드
+  ['data/dong_map.json','data/법정동_행정동.json'].forEach(function(u){
+    fetch(u).then(function(r){ if(r.ok) return r.json(); }).then(function(o){ if(o) loadAlias(o); }).catch(function(){});
+  });
+  var cands=['data/suwon_hjd.geojson','data/suwon.geojson','data/hjd.geojson','data/행정동.geojson','data/dong.geojson'];
+  var i=0;
+  (function next(){
+    if(i>=cands.length){ document.getElementById('drop').classList.add('show'); setStatus('행정동 경계 파일을 불러오세요 (드래그 또는 파일선택)'); return; }
+    fetch(cands[i]).then(function(r){ if(!r.ok) throw 0; return r.json(); })
+      .then(function(gj){ loadGeoJSON(gj); bindTips(); })
+      .catch(function(){ i++; next(); });
+  })();
+}
+
+/* ============ INIT ============ */
+ALIAS=cloneAlias(DEFAULT_ALIAS);
+initControls();
+renderKPIs(filtered());
+setStatus('점포 <b>'+STORES.length+'</b>개 로드됨 · 동 경계 파일 대기 중');
+tryAuto();
+
+// expose for console debugging
+window.__APP={STORES:STORES, recompute:recompute, features:function(){return features;}};
+})();
+</script>

@@ -1,0 +1,5 @@
+{"type":"FeatureCollection","features":[
+{"type":"Feature","properties":{"EMD_KOR_NM":"인계동","sgg_nm":"팔달구"},"geometry":{"type":"Polygon","coordinates":[[[127.024,37.272],[127.036,37.272],[127.036,37.284],[127.024,37.284],[127.024,37.272]]]}},
+{"type":"Feature","properties":{"EMD_KOR_NM":"우만동","sgg_nm":"팔달구"},"geometry":{"type":"Polygon","coordinates":[[[127.036,37.276],[127.048,37.276],[127.048,37.288],[127.036,37.288],[127.036,37.276]]]}},
+{"type":"Feature","properties":{"EMD_KOR_NM":"매탄동","sgg_nm":"영통구"},"geometry":{"type":"Polygon","coordinates":[[[127.044,37.258],[127.058,37.258],[127.058,37.270],[127.044,37.270],[127.044,37.258]]]}}
+]}

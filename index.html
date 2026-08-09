@@ -855,10 +855,10 @@ function aggregate(list){
     if(s.totRate!=null){ st+=s.totRate; nt++; }
     if(s.dayRate!=null){ sd+=s.dayRate; nd++; }
   });
-  var tot = nt? st/nt : null;   // 점포 총매출 달성률 단순평균
-  var day = nd? sd/nd : null;   // 점포 일매출 달성률 단순평균
+  var tot = nt? st/nt : null;   // 점포 총매출 달성률 단순평균 (지역부 공식 방식)
+  var day = tot;                // 일매출 달성률 = 총매출 달성률(동일 영업일수 기준, 지역부 자료와 일치)
   return {n:list.length, withPlan:withPlan, planSales:v1s, actSales:v3s,
-          tot:tot, day:day, totSum:(v1s? v3s/v1s:null)};
+          tot:tot, day:day, dayAvg:(nd? sd/nd:null), totSum:(v1s? v3s/v1s:null)};
 }
 
 /* ---- current filter state ---- */

@@ -153,6 +153,10 @@ __LEAFLET_JS__
 __STORE_DATA__
 </script>
 <script>
+/* ===== Embedded boundary GeoJSON (행정동 경계, 내장) ===== */
+__BOUNDARY_DATA__
+</script>
+<script>
 /* ===== App ===== */
 (function(){
 "use strict";
@@ -500,8 +504,14 @@ function tryAuto(){
 ALIAS=cloneAlias(DEFAULT_ALIAS);
 initControls();
 renderKPIs(filtered());
-setStatus('점포 <b>'+STORES.length+'</b>개 로드됨 · 동 경계 파일 대기 중');
-tryAuto();
+if(window.BOUNDARY_GEOJSON){ // 내장된 행정동 경계 즉시 로드
+  setStatus('내장 경계 로드 중…');
+  try{ loadGeoJSON(window.BOUNDARY_GEOJSON); bindTips(); }
+  catch(e){ setStatus('내장 경계 로드 실패: '+e.message); tryAuto(); }
+} else {
+  setStatus('점포 <b>'+STORES.length+'</b>개 로드됨 · 동 경계 파일 대기 중');
+  tryAuto();
+}
 
 // expose for console debugging
 window.__APP={STORES:STORES, recompute:recompute, features:function(){return features;}};

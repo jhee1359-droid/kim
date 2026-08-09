@@ -903,13 +903,23 @@ function featDong(props){
   for(var k in props){ if(typeof props[k]==='string' && props[k].trim()) return props[k]; }
   return '';
 }
-function featGu(props){
-  var keys=['sgg_nm','SGG_NM','SIG_KOR_NM','sig_kor_nm','gu','구','자치구'];
-  for(var i=0;i<keys.length;i++){ if(props[keys[i]]) { var t=String(props[keys[i]]); var m=t.match(/([가-힣]+구)\s*$/); return m?m[1]:t; } }
-  var full=featDong(props); var m2=full.match(/([가-힣]+구)/); return m2?m2[1]:'';
+function sggText(props){
+  return String(props.sggnm||props.sgg_nm||props.SGG_NM||props.SIG_KOR_NM||props.sig_kor_nm||'');
+}
+function featCity(props){ // 시/군 (예: "수원시장안구"→"수원시", "화성시"→"화성시")
+  var s=sggText(props); var m=s.match(/[가-힣]+?[시군]/); if(m) return m[0];
+  var full=String(featDong(props)||props.adm_nm||''); m=full.match(/[가-힣]+?[시군]/); return m?m[0]:'';
+}
+function featGu(props){ // 구만 (예: "수원시장안구"→"장안구")
+  var s=sggText(props).replace(/^.+?[시군]/,''); var m=s.match(/[가-힣]+구$/); if(m) return m[0];
+  var full=String(featDong(props)||props.adm_nm||'').replace(/^.*?[시군]/,''); m=full.match(/([가-힣]+구)/); return m?m[1]:'';
 }
 
+// 지도에 표시할 대상 시/군 = 점포 데이터에 있는 시(수원·화성·군포·의왕)
+var TARGET_CITIES = Array.from(new Set(STORES.map(function(s){return s.city;}).filter(Boolean)));
+
 function styleFor(feat){
+  if(state.city && feat.__city && feat.__city!==state.city){ return {opacity:0,fillOpacity:0,weight:0}; }
   var st = feat.__stats;
   var r = st ? st[state.metric] : null;
   var has = st && st.n>0;
@@ -923,11 +933,18 @@ function styleFor(feat){
 function loadGeoJSON(gj){
   if(geoLayer){ map.removeLayer(geoLayer); }
   features=[];
+  // 대상 시/군(수원·화성·군포·의왕)만 남기고 필터링 — 전국/도 전체 파일이어도 4개 시만 표시
+  var src=(gj&&gj.features)?gj.features:(gj&&gj.type==='Feature'?[gj]:[]);
+  var kept=src.filter(function(ft){ var c=featCity((ft&&ft.properties)||{}); return !TARGET_CITIES.length || TARGET_CITIES.indexOf(c)>=0; });
+  var used = kept.length? kept : src; // 인식 실패 시 원본 유지(빈 지도 방지)
+  var dropped = src.length - used.length;
+  gj={type:'FeatureCollection',features:used};
   geoLayer = L.geoJSON(gj,{
     style: styleFor,
     onEachFeature: function(feature, layer){
       feature.__dong = featDong(feature.properties||{});
       feature.__gu   = featGu(feature.properties||{});
+      feature.__city = featCity(feature.properties||{});
       feature.__layer= layer;
       features.push(feature);
       layer.on({
@@ -939,6 +956,7 @@ function loadGeoJSON(gj){
   }).addTo(map);
   try{ map.fitBounds(geoLayer.getBounds(),{padding:[20,20]}); }catch(e){}
   matched=true;
+  window.__dropped=dropped;
   recompute();
   document.getElementById('drop').classList.remove('show');
 }
@@ -952,7 +970,8 @@ function updateMatchStatus(){
   var mm=features.filter(function(f){return f.__stats&&f.__stats.n>0;}).length;
   var u=window.__unmatched||{n:0,dongs:[]};
   var extra=u.n? ' · <b>미매칭 점포 '+u.n+'</b>개('+u.dongs.slice(0,6).join(', ')+(u.dongs.length>6?' 외':'')+')':'';
-  setStatus('행정동 <b>'+features.length+'</b>개 · 점포연결 동 <b>'+mm+'</b>개'+extra);
+  var drop=window.__dropped? ' · 대상 외 '+window.__dropped+'개 동 제외':'';
+  setStatus('표시 동 <b>'+features.length+'</b>개(수원·화성·군포·의왕)'+drop+' · 점포연결 <b>'+mm+'</b>개'+extra);
 }
 
 /* recompute per-feature stats from current filter, restyle, refresh KPIs */
@@ -973,8 +992,9 @@ function recompute(){
   list.forEach(function(s){
     s.__feat=null;
     if(!s.adm){ unmatchedN++; return; }
-    // 법정동→행정동 연계표(있으면) 로 후보 행정동 이름 확장
-    var names = ALIAS[(s.gu||'')+'|'+normTok(s.adm)] || ALIAS[normTok(s.adm)] || [s.adm];
+    // 후보 동 이름: 주소상의 동 우선, 그다음 연계표(있으면)로 확장 (법정/행정 파일 모두 대응)
+    var names=[s.adm], al=ALIAS[(s.gu||'')+'|'+normTok(s.adm)]||ALIAS[normTok(s.adm)];
+    if(al) al.forEach(function(n){ if(names.indexOf(n)<0) names.push(n); });
     var hits=[], anyExact=false;
     names.forEach(function(nm){ var r=lookup(s.gu||s.city,nm); if(r){ if(!r.isBase) anyExact=true; hits.push(r); } });
     if(hits.length){

@@ -845,17 +845,20 @@ function rateColor(r){
 }
 function cssv(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
 
-/* ---- aggregation of a set of stores ---- */
+/* ---- aggregation of a set of stores ----
+   달성률 = 점포별 달성률의 단순평균(수원지역부 공식 방식). 계획/실적 금액은 합계로 표기. */
 function aggregate(list){
-  var v1s=0,v1d=0,v3s=0,v3d=0,withPlan=0;
+  var v1s=0,v3s=0,withPlan=0, st=0,nt=0, sd=0,nd=0;
   list.forEach(function(s){
-    v1s+=s.planSales||0; v1d+=s.planDays||0; v3s+=s.actSales||0; v3d+=s.actDays||0;
+    v1s+=s.planSales||0; v3s+=s.actSales||0;
     if(s.planSales) withPlan++;
+    if(s.totRate!=null){ st+=s.totRate; nt++; }
+    if(s.dayRate!=null){ sd+=s.dayRate; nd++; }
   });
-  var tot = v1s? v3s/v1s : null;
-  var planDaily = v1d? v1s/v1d : null, actDaily = v3d? v3s/v3d : null;
-  var day = (planDaily&&actDaily)? actDaily/planDaily : null;
-  return {n:list.length, withPlan:withPlan, planSales:v1s, actSales:v3s, tot:tot, day:day};
+  var tot = nt? st/nt : null;   // 점포 총매출 달성률 단순평균
+  var day = nd? sd/nd : null;   // 점포 일매출 달성률 단순평균
+  return {n:list.length, withPlan:withPlan, planSales:v1s, actSales:v3s,
+          tot:tot, day:day, totSum:(v1s? v3s/v1s:null)};
 }
 
 /* ---- current filter state ---- */

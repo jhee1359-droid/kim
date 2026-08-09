@@ -28,12 +28,19 @@ def num(x):
     return float(x) if isinstance(x, (int, float)) else 0.0
 
 
-def parse_addr(addr):
-    """주소1 → 시/구/동(법정동)/리. 주소는 지번주소(법정동) 기준."""
+def _dong_from(text):
+    """문자열에서 동/가/읍/면 토큰 추출 (예: '원천동 309'→원천동, '1층(내손동, ...)'→내손동)."""
+    for t in re.findall(r'[가-힣]+(?:동|가|읍|면)', str(text or '')):
+        if t.endswith('구') or t.endswith('시'):
+            continue
+        return t
+    return None
+
+
+def parse_addr(addr1, addr2=None):
+    """주소1 → 시/구/동(법정동)/리. 동이 없으면 주소2에서 보완. 지번주소(법정동) 기준."""
     out = {"city": None, "gu": None, "dong": None, "eupmyeon": None, "ri": None}
-    if not addr:
-        return out
-    for t in str(addr).replace('경기도', '경기').split():
+    for t in str(addr1 or '').replace('경기도', '경기').split():
         if t.endswith('시') or t.endswith('군'):
             out["city"] = t
         elif t.endswith('구'):
@@ -46,6 +53,8 @@ def parse_addr(addr):
         elif t.endswith('리'):
             out["ri"] = t
     out["adm"] = out["dong"] or out["eupmyeon"]  # 대표 동(법정동/읍면)
+    if not out["adm"]:  # 주소1에 동이 없으면 주소2에서 보완
+        out["adm"] = _dong_from(addr2)
     return out
 
 
@@ -60,7 +69,7 @@ def main():
     stores = []
     for r in rows:
         r = list(r) + [None] * (15 - len(r))
-        p = parse_addr(r[5])
+        p = parse_addr(r[5], r[6])
         v1s, v1d, v3s, v3d = num(r[7]), num(r[8]), num(r[10]), num(r[11])
         stores.append({
             "team": r[1], "sc": r[2], "code": str(r[3]) if r[3] is not None else "",

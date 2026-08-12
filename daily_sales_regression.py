@@ -83,14 +83,14 @@ models = {
     "RandomForestRegressor": (
         RandomForestRegressor(random_state=RANDOM_STATE, n_jobs=1),
         {"model__n_estimators": [150],
-         "model__max_depth": [None, 20],
-         "model__min_samples_leaf": [1, 5]},
+         "model__max_depth": [20],
+         "model__min_samples_leaf": [5, 10]},
     ),
     "ExtraTreesRegressor": (
         ExtraTreesRegressor(random_state=RANDOM_STATE, n_jobs=1),
         {"model__n_estimators": [150],
-         "model__max_depth": [None, 20],
-         "model__min_samples_leaf": [1, 5]},
+         "model__max_depth": [20],
+         "model__min_samples_leaf": [5, 10]},
     ),
     "HistGradientBoostingRegressor": (
         HistGradientBoostingRegressor(random_state=RANDOM_STATE),

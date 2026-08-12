@@ -17,11 +17,10 @@ import numpy as np
 import pandas as pd
 import joblib
 
-from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.preprocessing import StandardScaler, OneHotEncoder, TargetEncoder
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import r2_score
 from sklearn.inspection import permutation_importance
@@ -35,27 +34,6 @@ warnings.filterwarnings("ignore")
 RANDOM_STATE = 42
 DATA = ("/root/.claude/uploads/2cbc08f3-f4f0-5c61-890a-c59003410fb2/"
         "afaad623-________________________.xlsx")
-
-
-# ---------------------------------------------------------------------------
-# 고카디널리티(상품코드·상품명 각 951종) 범주형 -> 평균 타깃 인코딩
-#   학습 데이터의 카테고리별 타깃 평균으로 인코딩(원-핫 대비 차원 폭증 방지).
-#   인코딩 맵은 학습 데이터로만 산출 -> 테스트 누수 없음. CV 폴드마다 재적합.
-# ---------------------------------------------------------------------------
-class MeanTargetEncoder(BaseEstimator, TransformerMixin):
-    def fit(self, X, y):
-        X = pd.DataFrame(X).reset_index(drop=True)
-        y = pd.Series(np.asarray(y).ravel())
-        self.columns_ = list(X.columns)
-        self.global_ = float(y.mean())
-        self.maps_ = {c: y.groupby(X[c].values).mean() for c in self.columns_}
-        return self
-
-    def transform(self, X):
-        X = pd.DataFrame(X)
-        cols = [X[c].map(self.maps_[c]).fillna(self.global_).to_numpy().reshape(-1, 1)
-                for c in self.columns_]
-        return np.hstack(cols)
 
 
 # ---------------------------------------------------------------------------
@@ -87,7 +65,8 @@ preprocess = ColumnTransformer(transformers=[
     ("num", Pipeline([("imp", SimpleImputer(strategy="median")),
                       ("sc", StandardScaler())]), numeric_cols),
     ("ohe", OneHotEncoder(handle_unknown="ignore", sparse_output=False), lowcard_cat),
-    ("te", MeanTargetEncoder(), highcard_cat),
+    # 고카디널리티(상품코드·상품명 각 951종) -> 타깃 인코딩(내부 교차적합으로 누수 방지)
+    ("te", TargetEncoder(random_state=RANDOM_STATE), highcard_cat),
 ])
 
 # ---------------------------------------------------------------------------
@@ -103,13 +82,13 @@ print(f"[분할] Train {len(X_train):,} / Test {len(X_test):,} (70% / 30%)")
 models = {
     "RandomForestRegressor": (
         RandomForestRegressor(random_state=RANDOM_STATE, n_jobs=1),
-        {"model__n_estimators": [300],
+        {"model__n_estimators": [150],
          "model__max_depth": [None, 20],
          "model__min_samples_leaf": [1, 5]},
     ),
     "ExtraTreesRegressor": (
         ExtraTreesRegressor(random_state=RANDOM_STATE, n_jobs=1),
-        {"model__n_estimators": [300],
+        {"model__n_estimators": [150],
          "model__max_depth": [None, 20],
          "model__min_samples_leaf": [1, 5]},
     ),
@@ -154,7 +133,7 @@ print(f"[최고 성능 모델] {best['name']}  (test R2 = {best['test']:.4f})")
 # 6. 최적 모델 저장 (.pkl)
 # ---------------------------------------------------------------------------
 pkl_path = "best_model.pkl"
-joblib.dump(best["pipe"], pkl_path)
+joblib.dump(best["pipe"], pkl_path, compress=("gzip", 6))
 print(f"[모델 저장] '{pkl_path}' 에 최적 파이프라인 저장 완료")
 
 # ---------------------------------------------------------------------------

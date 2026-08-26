@@ -38,6 +38,9 @@ select.btn{font-weight:700;}
 .tab.pending{opacity:.42;}
 .tab.pending.on{opacity:1;}
 .tab .pend{display:inline-block;margin-left:5px;font-size:9px;font-weight:800;color:#fff;background:var(--warn);border-radius:8px;padding:1px 6px;vertical-align:middle;letter-spacing:.02em;}
+.tab.onetime{opacity:.5;color:var(--muted);}
+.tab.onetime.on{opacity:1;}
+.tab .once{display:inline-block;margin-left:5px;font-size:9px;font-weight:800;color:#fff;background:var(--muted);border-radius:8px;padding:1px 6px;vertical-align:middle;letter-spacing:.02em;}
 .pendbanner{margin:0 0 14px;padding:12px 15px;border-radius:12px;background:var(--warn-soft);border:1px solid var(--warn);color:var(--ink);font-size:13px;font-weight:600;display:flex;gap:9px;align-items:flex-start;line-height:1.5;}
 .pendbanner b{color:var(--warn);}
 .teamnote{font-size:12px;color:var(--muted);margin:12px 2px 2px;}
@@ -202,6 +205,7 @@ const CHUSEOK=/*__CHUSEOK__*/{"asof":"8/25 10시 마감","cats":["조미·통조
 const TEAMS=["1팀","2팀","3팀","4팀","5팀","6팀","7팀","8팀","9팀"];
 const PAGES=[["📊","대시보드"],["📦","연장진열대"],["🏪","점두진열"],["🍙","간편식"],["☕","GET커피"],["🥐","BH405"],["🥤","뚱캔"],["🍢","즉석조리"],["🗑️","도너츠정리"],["🎁","추석예약발주"]];
 const PENDING=[1,2]; // 연장진열대·점두진열: 8월 취합 미완료
+const ONETIME=[8]; // 도너츠정리: 1회성
 let curPage=0, selTeam=null, selCohort=null, selSangjo="후라이드";
 
 /* ===== helpers ===== */
@@ -833,7 +837,7 @@ function insight(t,lines){ return `<div class="insight"><div class="t">💬 ${t}
 
 /* ===== nav / controls ===== */
 function buildNav(){
-  document.getElementById("nav").innerHTML=PAGES.map((p,i)=>`<button class="tab${PENDING.includes(i)?" pending":""}" data-i="${i}">${p[0]} ${p[1]}${PENDING.includes(i)?`<span class="pend">취합중</span>`:""}</button>`).join("");
+  document.getElementById("nav").innerHTML=PAGES.map((p,i)=>`<button class="tab${PENDING.includes(i)?" pending":""}${ONETIME.includes(i)?" onetime":""}" data-i="${i}">${p[0]} ${p[1]}${PENDING.includes(i)?`<span class="pend">취합중</span>`:""}${ONETIME.includes(i)?`<span class="once">1회성</span>`:""}</button>`).join("");
   document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{curPage=+t.dataset.i;renderPage();window.scrollTo({top:0,behavior:"smooth"});});
   const sel=document.getElementById("team-select");
   sel.innerHTML=`<option value="">👥 전체 (지역부)</option>`+TEAMS.map(t=>`<option value="${t}">수원${t}</option>`).join("");

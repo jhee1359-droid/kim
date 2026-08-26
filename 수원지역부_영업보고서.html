@@ -246,25 +246,31 @@ function renderSummary(){
   const good=[],warn=[];
   KPI.list.forEach(k=>{ const m=k.m[k.pr||0],dir=k.dir||1,cls=clsDir(m[1],dir);
     if(cls==="bad") warn.push(`${k.name} <b>${m[0]} ${m[1]}%</b>`);
-    else if(dir>0&&m[1]>=110) good.push(`${k.name} <b>${m[0]} ${m[1]}%</b>`); });
-  const E=REPORT.lasimEff,ri=REPORT.rice.region,rin=REPORT.rice_non.region,sa=REPORT.sand.region,san=REPORT.sand_non.region,dd=REPORT.dodu.region,ex=REPORT.ext.region;
-  const rgap=Math.round((ri.yoy-rin.yoy)*10)/10, sgap=Math.round((sa.yoy-san.yoy)*10)/10;
+    else if(dir>0&&m[1]>=115) good.push(`${k.name} <b>${m[0]} ${m[1]}%</b>`); });
+  const E=REPORT.lasimEff, cv=CONV.region, ch=CHUSEOK.region, gg=SANGJO['고구마'].region, fr=SANGJO['후라이드'].region,
+        cl=CLEAN.region, hp=HEALTHPERM.region, cb=COMBO.region, bh=STRAT.bh405.teams['지역부'], mg=MGMT;
+  const cbMin=COMBO.skus[cb.sku.indexOf(Math.min(...cb.sku))], cbMinV=Math.min(...cb.sku);
   const wins=[
-    `☕ <b>라심발리 교체 효과 확실</b> — 도입점 잔수 전년비 ${E.treat.cups_yoy}% vs 미도입 ${E.ctrl.cups_yoy}%, 순효과 <b class="g">+${E.did_cups}%p</b> (평균 ${E.treat.cups_2507}→${E.treat.cups_2607}잔)`,
-    `🍙 <b>헬시플레저 행사 효과</b> — 진행 ${sa.yoy}% vs 미진행 ${san.yoy}%, 초과분 <b class="g">+${sgap}%p</b>`,
-    `🏪 <b>점두진열</b> 상품매출 전년비 <b class="g">${dd.dy}%(2.1배)</b>, 동일점 ${dd.incRate}% 성장`,
-    `📦 <b>연장진열대</b> 일매출 전년비 ${ex.sy}% (9팀 ${REPORT.ext.teams['9팀'].sy}%·재고 ${REPORT.ext.teams['9팀'].ry}% 최고)`,
+    `📊 <b>경영계획 회복세</b> — ${mg.basis} 일매출 경영계획 <b class="g">${mg.daily.plan}%</b>(전년비 ${mg.daily.yoy}%)·총매출 ${mg.total.plan}%(전년비 <b class="g">${mg.total.yoy}%</b>), 일요일~월요일 대폭 개선`,
+    `🎁 <b>추석 예약발주 전사 1위</b> — 수원 전년비 <b class="g">${ch.yoy}%</b>(전사 전년비 ${CHUSEOK.rankYoy}위), 발주규모 ${CHUSEOK.rankSum}위`,
+    `🍙 <b>아크릴 진열대 도입 효과</b> — 도입점 간편식 전년비 ${cv.acryl.convYoy}% vs 미도입 ${cv.none.convYoy}%(<b class="g">+${cv.diff.convYoy}%p</b>), 김밥 <b class="g">+${cv.diff.gbSalesYoy}%p</b>`,
+    `☕ <b>라심발리 교체 효과</b> — 도입점 잔수 ${E.treat.cups_2507}→${E.treat.cups_2607}잔, 미도입 대비 순효과 <b class="g">+${E.did_cups}%p</b>`,
+    `🍠 <b>즉석조리 고구마</b> 일매출 전년비 <b class="g">${gg.yoy}%</b> (마스터 정리 후 운영 질 개선)`,
   ].concat(good.slice(0,2).map(g=>`📈 ${g}`));
   const risks=[
-    `🍙 <b>주먹밥 행사 재점검</b> — 진행 ${ri.yoy}% < 미진행 ${rin.yoy}% (초과분 <b class="b">${rgap}%p</b>) → 고매출 성숙점 위주라 저성장점 재배치 검토`,
-  ].concat(warn.map(w=>`⚠️ ${w} — 목표/전년 미달`));
+    `☕ <b>GET커피 잔수·청소</b> — 판매잔수 6.6잔(목표 10잔·전사 17위) + 라심발리 <b class="b">청소 ${cl.rate}%</b>(미청소 ${cl.machine-cl.dose}대) → 청소 독려 시급`,
+    `🥐 <b>BH405 ${bh.rate}%</b>·🍜 <b>콤보행사 7종 완비 ${cb.rate}%</b> — 목표 미달, 취약 SKU <b class="b">${cbMin} ${cbMinV}%</b> 집중 보충 필요`,
+    `📋 <b>건기식 인허가 갱신 ${hp.rate}%</b>(전사 ${hp.rank}위) — 2·3팀 6%대 정체, 미갱신 방치 시 판매 제약 리스크`,
+    `🍙 <b>간편식 2·8팀 도입점 부진</b> — 아크릴 도입점이 미진열보다 낮음(진열 운영·발주 점검)`,
+    `🍗 <b>즉석조리 후라이드</b> 일매출 전년비 ${fr.yoy}% 하락 — 미가동점 재가동 필요`,
+  ].concat(warn.slice(0,3).map(w=>`⚠️ ${w} — 목표/전년 미달`));
   return `<div class="summary">
-    <div class="sm-h">📋 ${KPI.meta.week} 핵심 요약 <span>${KPI.meta.asof} · 자동 추출</span></div>
+    <div class="sm-h">📋 ${KPI.meta.week} 핵심 요약 <span>8월 종합 · 자동 추출</span></div>
     <div class="sm-cols">
       <div class="sm-col good"><div class="sm-t">✅ 성과 (효과 확인)</div><ul>${wins.map(x=>`<li>${x}</li>`).join("")}</ul></div>
       <div class="sm-col warn"><div class="sm-t">⚠️ 점검 필요</div><ul>${risks.map(x=>`<li>${x}</li>`).join("")}</ul></div>
     </div>
-    <div class="sm-note">※ 지표 목표/전년 대비와 진행 vs 미진행·DiD 결과에서 자동 선별했습니다.</div></div>`;
+    <div class="sm-note">※ 지표 목표/전년 대비, 진열 효과, 캠페인·운영 현황에서 선별했습니다. (연장진열대·점두진열은 8월 취합 완료 후 반영)</div></div>`;
 }
 function mgmtCard(label,d){
   let chips = d.yoy==null ? `<span class="mchip tnum" style="background:rgba(255,255,255,.85);color:#555">경영계획 달성률</span>` : `<span class="mchip tnum" style="background:rgba(255,255,255,.85);color:${d.yoy>=100?'#127a3e':'#b45309'}">전년비 ${d.yoy}% ${d.yoy>=100?'▲':'▼'}</span>`;

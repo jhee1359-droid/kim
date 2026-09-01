@@ -1,0 +1,289 @@
+<title>SG 상품 추천 진단</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@500;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+:root{
+  --bg:#eef1ef; --surface:#ffffff; --surface-2:#f4f7f5; --surface-3:#eaefec;
+  --ink:#15201b; --ink-soft:#556158; --ink-faint:#889188;
+  --line:#dde4df; --line-strong:#c7d0ca;
+  --accent:#0f766e; --accent-soft:#dcefec; --accent-ink:#0b574f;
+  --p1:#0f766e; --p1-soft:#dcefec; --p2:#b45309; --p2-soft:#f7ead5;
+  --gA:#64748b; --gA-bg:#eef1f5; --gB:#c2790a; --gB-bg:#fbeed6; --gC:#15864a; --gC-bg:#e4f3e9;
+  --pos:#15864a; --neg:#cc3b3b;
+  --shadow:0 1px 2px rgba(20,40,35,.06),0 8px 22px rgba(20,40,35,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --bg:#0d1210; --surface:#141b17; --surface-2:#1a221d; --surface-3:#202a24;
+  --ink:#e6ede8; --ink-soft:#98a29b; --ink-faint:#6b746d;
+  --line:#27312b; --line-strong:#354139;
+  --accent:#2dd4bf; --accent-soft:#123430; --accent-ink:#7ff0e2;
+  --p1:#2dd4bf; --p1-soft:#123430; --p2:#f0a83a; --p2-soft:#3a2a10;
+  --gA:#94a3b8; --gA-bg:#222a33; --gB:#f0b429; --gB-bg:#332708; --gC:#4ade80; --gC-bg:#123020;
+  --pos:#4ade80; --neg:#f87171;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.4);
+}}
+[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0d1210; --surface:#141b17; --surface-2:#1a221d; --surface-3:#202a24;
+  --ink:#e6ede8; --ink-soft:#98a29b; --ink-faint:#6b746d;
+  --line:#27312b; --line-strong:#354139;
+  --accent:#2dd4bf; --accent-soft:#123430; --accent-ink:#7ff0e2;
+  --p1:#2dd4bf; --p1-soft:#123430; --p2:#f0a83a; --p2-soft:#3a2a10;
+  --gA:#94a3b8; --gA-bg:#222a33; --gB:#f0b429; --gB-bg:#332708; --gC:#4ade80; --gC-bg:#123020;
+  --pos:#4ade80; --neg:#f87171;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"IBM Plex Sans KR",system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:960px;margin:0 auto;padding:22px 16px 60px;}
+h1,h2,h3{font-family:"Gothic A1","IBM Plex Sans KR",sans-serif;margin:0;}
+.mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;}
+.eyebrow{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink);font-weight:600;}
+
+header{margin-bottom:16px;}
+header h1{font-size:25px;font-weight:800;letter-spacing:-.01em;line-height:1.15;margin-top:5px;text-wrap:balance;}
+header .sub{margin:5px 0 0;color:var(--ink-soft);font-size:13.5px;max-width:60ch;}
+.storebar{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin:16px 0 4px;
+  background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:14px 16px;box-shadow:var(--shadow);}
+.storebar .fld{display:flex;flex-direction:column;gap:5px;}
+.storebar label{font-size:12px;color:var(--ink-soft);font-weight:600;}
+.storebar input{font:inherit;font-family:"IBM Plex Mono",monospace;font-size:16px;font-weight:600;
+  padding:9px 12px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2);color:var(--ink);width:130px;}
+.storebar input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent);}
+.storebar .who{font-size:13px;color:var(--ink-soft);padding-bottom:9px;}
+.storebar .who b{color:var(--ink);font-weight:600;}
+.spacer{flex:1}
+.themebtn{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-soft);
+  border-radius:9px;padding:9px 12px;font:inherit;font-size:13px;cursor:pointer;}
+
+.tabs{display:flex;gap:8px;margin:16px 0 14px;}
+.tab{flex:1;border:1px solid var(--line-strong);background:var(--surface);border-radius:12px;
+  padding:12px 14px;cursor:pointer;text-align:left;transition:.15s;}
+.tab .t1{font-family:"Gothic A1",sans-serif;font-weight:700;font-size:15px;}
+.tab .t2{font-size:11.5px;color:var(--ink-faint);margin-top:2px;}
+.tab[aria-selected=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);}
+.tab[data-p="1"][aria-selected=true]{border-color:var(--p1);box-shadow:inset 0 0 0 1px var(--p1);background:var(--p1-soft);}
+.tab[data-p="2"][aria-selected=true]{border-color:var(--p2);box-shadow:inset 0 0 0 1px var(--p2);background:var(--p2-soft);}
+
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.scard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:13px 14px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.scard .strip{position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);}
+.scard .lab{font-size:11.5px;color:var(--ink-soft);font-weight:500;}
+.scard .val{font-size:23px;font-weight:600;margin-top:5px;line-height:1;}
+.scard .val small{font-size:12px;color:var(--ink-faint);margin-left:2px;font-weight:500;}
+.scard.pos .val{color:var(--pos)} .scard.neg .val{color:var(--neg)}
+
+details.params{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:16px;box-shadow:var(--shadow);}
+details.params summary{cursor:pointer;padding:13px 16px;font-size:13.5px;font-weight:600;color:var(--ink-soft);list-style:none;display:flex;align-items:center;gap:8px;}
+details.params summary::-webkit-details-marker{display:none}
+details.params summary::before{content:"⚙";}
+.pgrid{padding:4px 16px 16px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px 22px;}
+.pctl label{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-soft);margin-bottom:6px;}
+.pctl label b{color:var(--accent-ink);font-weight:600;}
+.pctl input[type=range]{width:100%;accent-color:var(--accent);}
+.note{font-size:11.5px;color:var(--ink-faint);grid-column:1/-1;border-top:1px dashed var(--line);padding-top:10px;}
+
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px 16px;box-shadow:var(--shadow);
+  border-left:4px solid var(--line-strong);display:flex;flex-direction:column;gap:11px;}
+.card.gA{border-left-color:var(--gA)} .card.gB{border-left-color:var(--gB)} .card.gC{border-left-color:var(--gC)}
+.card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.card .nm{font-weight:600;font-size:14.5px;line-height:1.3;}
+.card .ct{font-size:11.5px;color:var(--ink-faint);margin-top:2px;}
+.grade{flex-shrink:0;display:inline-flex;flex-direction:column;align-items:center;gap:1px;
+  padding:5px 10px;border-radius:10px;font-weight:700;font-size:15px;line-height:1;font-family:"Gothic A1",sans-serif;}
+.grade small{font-size:9px;font-weight:600;letter-spacing:.03em;}
+.grade.gA{background:var(--gA-bg);color:var(--gA)} .grade.gB{background:var(--gB-bg);color:var(--gB)} .grade.gC{background:var(--gC-bg);color:var(--gC)}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.metric{background:var(--surface-2);border-radius:9px;padding:9px 10px;}
+.metric .k{font-size:10.5px;color:var(--ink-faint);font-weight:500;}
+.metric .v{font-size:16px;font-weight:600;margin-top:3px;font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;line-height:1.1;}
+.metric .v small{font-size:10px;color:var(--ink-faint);font-weight:500;margin-left:1px;}
+.metric.profit .v.pos{color:var(--pos)} .metric.profit .v.neg{color:var(--neg)}
+.reason{font-size:12.5px;color:var(--ink-soft);line-height:1.55;background:var(--accent-soft);
+  border-radius:9px;padding:10px 12px;}
+.reason b{color:var(--accent-ink);font-weight:600;}
+.count{font-size:12.5px;color:var(--ink-faint);margin:2px 2px 12px;}
+.controls2{display:flex;gap:9px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
+.controls2 select,.controls2 input{font:inherit;font-size:13px;padding:7px 10px;border:1px solid var(--line-strong);
+  border-radius:9px;background:var(--surface);color:var(--ink);}
+.controls2 input[type=search]{flex:1;min-width:140px;}
+footer{margin-top:24px;font-size:11.5px;color:var(--ink-faint);line-height:1.75;border-top:1px solid var(--line);padding-top:14px;}
+footer b{color:var(--ink-soft);font-weight:600;}
+footer code{font-family:"IBM Plex Mono",monospace;background:var(--surface-2);padding:1px 5px;border-radius:5px;}
+@media (max-width:680px){
+  .summary{grid-template-columns:repeat(2,1fr)} .cards{grid-template-columns:1fr}
+  .pgrid{grid-template-columns:1fr 1fr} header h1{font-size:22px}
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+      <div>
+        <div class="eyebrow">현장부서 AI · 2권역 · SG 이식 진단</div>
+        <h1>SG 상품 추천 진단</h1>
+        <p class="sub">점포코드로 1안·2안별 <b>추천상품·적정수량·폐기예상·손익</b>을 즉시 조회합니다. 회전율 근거는 판매예측 모델(ExtraTrees, R² 0.68)의 일 예측판매량입니다.</p>
+      </div>
+      <button class="themebtn" id="theme">◐ 테마</button>
+    </div>
+  </header>
+
+  <div class="storebar">
+    <div class="fld">
+      <label for="store">점포코드</label>
+      <input id="store" value="54885" inputmode="numeric" autocomplete="off">
+    </div>
+    <div class="who">점포 : <b id="storenm">탑동중앙점</b> · 매장면적 <b>171㎡</b></div>
+    <div class="spacer"></div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab" data-p="1" aria-selected="true"><div class="t1">1안 · 비축형</div><div class="t2">무투자 · 상온즉석식·조미소스 · 유통기한 6개월+</div></button>
+    <button class="tab" data-p="2" aria-selected="false"><div class="t1">2안 · 모듈형</div><div class="t2">투자 · 과일·계란·냉동즉석식 · 집기 회수 반영</div></button>
+  </div>
+
+  <div class="summary" id="summary"></div>
+
+  <details class="params">
+    <summary>담당자 계산 파라미터 (Excel 원장 값으로 교체)</summary>
+    <div class="pgrid">
+      <div class="pctl"><label>평균 판매단가 <b><span id="v-unit">2,500</span>원</b></label><input type="range" id="unit" min="500" max="8000" step="100" value="2500"></div>
+      <div class="pctl"><label>마진율 <b><span id="v-margin">28</span>%</b></label><input type="range" id="margin" min="5" max="50" step="1" value="28"></div>
+      <div class="pctl"><label>안전계수 <b><span id="v-safety">1.2</span></b></label><input type="range" id="safety" min="1" max="2" step="0.05" value="1.2"></div>
+      <div class="pctl"><label>진열 최소단위 <b><span id="v-unitq">1</span>개</b></label><input type="range" id="unitq" min="1" max="12" step="1" value="1"></div>
+      <div class="pctl"><label>유통기한 도래확률 <b><span id="v-exp">-</span>%</b></label><input type="range" id="exp" min="0" max="60" step="1" value="3"></div>
+      <div class="pctl" id="investwrap"><label>2안 집기 투자액 <b><span id="v-invest">30</span>만원</b></label><input type="range" id="invest" min="0" max="200" step="10" value="30"></div>
+      <div class="note">기본값은 예시입니다. 유사점포 회전율·원가·유통기한 도래확률은 <b>Excel 원장(셀프BI)</b>에서 산출된 값으로 교체하세요. 유통기한 도래확률 기본값은 안 전환 시 자동 변경(1안 3% · 2안 25%).</div>
+    </div>
+  </details>
+
+  <div class="controls2">
+    <select id="grade"><option value="">전체 등급</option><option value="C">C · 정상</option><option value="B">B · 취급·저조</option><option value="A">A · 미취급·부진</option></select>
+    <select id="sort"><option value="profit">주간손익순</option><option value="pred">회전율순</option><option value="waste">폐기위험순</option><option value="name">이름순</option></select>
+    <input type="search" id="q" placeholder="상품명 검색…">
+  </div>
+
+  <div class="count" id="count"></div>
+  <div class="cards" id="cards"></div>
+
+  <footer>
+    <div><b>산출 로직</b> · 적정수량 = 올림(주간예측판매 × 안전계수 ÷ 진열단위) × 진열단위 · 폐기예상 = max(0, 적정수량 − 주간예측판매) × 유통기한도래확률 × 원가 · 주간손익 = 판매이익 − 폐기손실 <span id="foot2"></span></div>
+    <div style="margin-top:5px"><b>등급</b> · C 정상(최근2주 8일+ 판매) · B 취급·저조(1~7일) · A 미취급·부진(0일) · <b>회전율</b> = 일 예측판매량 · <b>주간</b> = ×7</div>
+    <div style="margin-top:5px">본 뷰어는 프로토타입입니다. 점포코드 입력·다점포 비교·실제 단가/원가는 Excel 계산엔진 연동 시 반영됩니다. 현재 데이터: 탑동중앙점 기준.</div>
+  </footer>
+</div>
+
+<script>
+const DATA=[{"name": "휴)오뚜기맛있는큰밥4입", "cat": "즉석밥류", "plan": 1, "pred": 12.61, "stock": 565, "days": 8}, {"name": "CJ)100%현미밥130g", "cat": "즉석밥류", "plan": 1, "pred": 2.8, "stock": 16, "days": 2}, {"name": "CJ)큰햇반300g", "cat": "즉석밥류", "plan": 1, "pred": 1.59, "stock": 13, "days": 8}, {"name": "CJ)햇반210g", "cat": "즉석밥류", "plan": 1, "pred": 1.37, "stock": 14, "days": 5}, {"name": "오뚜기)맛있는밥150g", "cat": "즉석밥류", "plan": 1, "pred": 1.16, "stock": 13, "days": 2}, {"name": "CJ)햇반잡곡밥210g", "cat": "즉석밥류", "plan": 1, "pred": 0.77, "stock": 8, "days": 6}, {"name": "CJ)햇반현미밥210g*3입", "cat": "즉석밥류", "plan": 1, "pred": 0.73, "stock": 4, "days": 7}, {"name": "CJ)햇반작은공기130g", "cat": "즉석밥류", "plan": 1, "pred": 0.71, "stock": 5, "days": 11}, {"name": "CJ)햇반발아현미밥210g", "cat": "즉석밥류", "plan": 1, "pred": 0.61, "stock": 9, "days": 0}, {"name": "CJ)100%현미밥130g*3입", "cat": "즉석밥류", "plan": 1, "pred": 0.53, "stock": 22, "days": 2}, {"name": "득템)따끈한흰쌀밥8입", "cat": "즉석밥류", "plan": 1, "pred": 0.47, "stock": 10, "days": 7}, {"name": "오뚜기)맛있는밥210g", "cat": "즉석밥류", "plan": 1, "pred": 0.43, "stock": 7, "days": 3}, {"name": "오뚜기)골드마요네즈300g", "cat": "소스류", "plan": 1, "pred": 0.39, "stock": 6, "days": 5}, {"name": "오뚜기)맛있는큰밥300g", "cat": "즉석밥류", "plan": 1, "pred": 0.38, "stock": 5, "days": 5}, {"name": "오뚜기)토마토케챂300g", "cat": "소스류", "plan": 1, "pred": 0.27, "stock": 6, "days": 2}, {"name": "CJ)태양초고추장500g", "cat": "장류", "plan": 1, "pred": 0.26, "stock": 4, "days": 1}, {"name": "샘표)진간장500ml", "cat": "장류", "plan": 1, "pred": 0.25, "stock": 16, "days": 0}, {"name": "샘표)폰타나토마토소스600", "cat": "소스류", "plan": 1, "pred": 0.25, "stock": 4, "days": 0}, {"name": "CJ)햇반작은공기130g*3입", "cat": "즉석밥류", "plan": 1, "pred": 0.25, "stock": 8, "days": 1}, {"name": "오뚜기)사과식초360ml", "cat": "소스류", "plan": 1, "pred": 0.25, "stock": 6, "days": 3}, {"name": "CJ)해찬들고추장200g", "cat": "장류", "plan": 1, "pred": 0.23, "stock": 6, "days": 0}, {"name": "득템)황금비율현미밥8입", "cat": "즉석밥류", "plan": 1, "pred": 0.22, "stock": 2, "days": 2}, {"name": "샘표)밥도둑멸치볶음", "cat": "양념류", "plan": 1, "pred": 0.21, "stock": 9, "days": 1}, {"name": "CJ)하얀설탕1KG", "cat": "양념류", "plan": 1, "pred": 0.21, "stock": 7, "days": 2}, {"name": "CJ)햇반210g*6입", "cat": "즉석밥류", "plan": 1, "pred": 0.2, "stock": 3, "days": 3}, {"name": "CJ)해찬들사계절쌈장500g", "cat": "장류", "plan": 1, "pred": 0.19, "stock": 7, "days": 4}, {"name": "CJ)햇반찰잡곡밥210g", "cat": "즉석밥류", "plan": 1, "pred": 0.19, "stock": 8, "days": 5}, {"name": "대상)미원맛소금95g", "cat": "양념류", "plan": 1, "pred": 0.19, "stock": 4, "days": 0}, {"name": "대상)통후추그라인더35g", "cat": "양념류", "plan": 1, "pred": 0.19, "stock": 0, "days": 8}, {"name": "마이)저당마요네즈260g", "cat": "소스류", "plan": 1, "pred": 0.19, "stock": 0, "days": 7}, {"name": "샘표)직화간짜장소스", "cat": "소스류", "plan": 1, "pred": 0.18, "stock": 0, "days": 0}, {"name": "샘표)크림파스타소스430g", "cat": "소스류", "plan": 1, "pred": 0.18, "stock": 2, "days": 0}, {"name": "CJ)사계절쌈장170g", "cat": "장류", "plan": 1, "pred": 0.18, "stock": 6, "days": 0}, {"name": "CJ)햇반서리태흑미밥210g", "cat": "즉석밥류", "plan": 1, "pred": 0.18, "stock": 6, "days": 2}, {"name": "예주)사포코에그누들", "cat": "소스류", "plan": 1, "pred": 0.18, "stock": 0, "days": 2}, {"name": "오뚜기)맛있는밥4입", "cat": "즉석밥류", "plan": 1, "pred": 0.17, "stock": 4, "days": 9}, {"name": "마이)저당저칼로리케찹", "cat": "소스류", "plan": 1, "pred": 0.17, "stock": 0, "days": 3}, {"name": "마이)저당저칼로리딸기잼", "cat": "소스류", "plan": 1, "pred": 0.16, "stock": 0, "days": 5}, {"name": "영남)레이지레몬원액200ml", "cat": "소스류", "plan": 1, "pred": 0.15, "stock": 6, "days": 2}, {"name": "CJ)햇반흑미밥210g", "cat": "즉석밥류", "plan": 1, "pred": 0.15, "stock": 15, "days": 1}, {"name": "CJ)햇반흑미밥210g*3입", "cat": "즉석밥류", "plan": 1, "pred": 0.15, "stock": 10, "days": 1}, {"name": "CJ)명품다시다100g", "cat": "양념류", "plan": 1, "pred": 0.15, "stock": 6, "days": 3}, {"name": "CJ)햇반210g*8입", "cat": "즉석밥류", "plan": 1, "pred": 0.15, "stock": 3, "days": 1}, {"name": "오뚜기)물엿700g", "cat": "소스류", "plan": 1, "pred": 0.15, "stock": 4, "days": 1}, {"name": "오뚜기)토마토소스", "cat": "소스류", "plan": 1, "pred": 0.15, "stock": 3, "days": 14}, {"name": "대상)저당칠리소스250g", "cat": "소스류", "plan": 1, "pred": 0.15, "stock": 8, "days": 3}, {"name": "삼양)불닭소스200g", "cat": "소스류", "plan": 1, "pred": 0.15, "stock": 6, "days": 1}, {"name": "마이노멀)알룰로스 가루형", "cat": "양념류", "plan": 1, "pred": 0.15, "stock": 0, "days": 4}, {"name": "오뚜기)백세카레약매100g", "cat": "양념류", "plan": 1, "pred": 0.14, "stock": 11, "days": 2}, {"name": "CJ)들기름햇반200g", "cat": "즉석밥류", "plan": 1, "pred": 0.14, "stock": 6, "days": 1}, {"name": "마이)땅콩버터스틱크런치", "cat": "소스류", "plan": 1, "pred": 0.14, "stock": 104, "days": 2}, {"name": "예주)와이쌀국수면(1mm)", "cat": "소스류", "plan": 1, "pred": 0.14, "stock": 26, "days": 4}, {"name": "예주)아지노모도미원", "cat": "양념류", "plan": 1, "pred": 0.14, "stock": 29, "days": 2}, {"name": "CJ)재래식된장500g", "cat": "장류", "plan": 1, "pred": 0.13, "stock": 5, "days": 0}, {"name": "CJ)해찬들초고추장300g", "cat": "장류", "plan": 1, "pred": 0.13, "stock": 7, "days": 2}, {"name": "CJ)햇반잡곡밥210g*3입", "cat": "즉석밥류", "plan": 1, "pred": 0.13, "stock": 17, "days": 2}, {"name": "CJ)햇반발아현미작은공기", "cat": "즉석밥류", "plan": 1, "pred": 0.13, "stock": 14, "days": 1}, {"name": "대상)토마토파스타600g", "cat": "소스류", "plan": 1, "pred": 0.13, "stock": 12, "days": 2}, {"name": "한생)내리찬볶음참깨100g", "cat": "양념류", "plan": 1, "pred": 0.13, "stock": 5, "days": 2}, {"name": "예주)라이스페이퍼(22cm)", "cat": "소스류", "plan": 1, "pred": 0.13, "stock": 29, "days": 2}, {"name": "CJ)햇반200g*3입", "cat": "즉석밥류", "plan": 1, "pred": 0.12, "stock": 4, "days": 0}, {"name": "CJ)햇반210g*12입", "cat": "즉석밥류", "plan": 1, "pred": 0.12, "stock": 13, "days": 1}, {"name": "CJ)백설맛소금250g", "cat": "양념류", "plan": 1, "pred": 0.12, "stock": 0, "days": 3}, {"name": "CJ)큰햇반300g*3입", "cat": "즉석밥류", "plan": 1, "pred": 0.12, "stock": 4, "days": 1}, {"name": "오뚜기)카레매운맛100g", "cat": "양념류", "plan": 1, "pred": 0.12, "stock": 5, "days": 3}, {"name": "오뚜기)딸기쨈300g", "cat": "소스류", "plan": 1, "pred": 0.12, "stock": 6, "days": 1}, {"name": "대상)미원100g", "cat": "양념류", "plan": 1, "pred": 0.12, "stock": 6, "days": 1}, {"name": "훼밀리)SB생와사비43g", "cat": "소스류", "plan": 1, "pred": 0.11, "stock": 8, "days": 1}, {"name": "오뚜기)백세카레순한100g", "cat": "양념류", "plan": 1, "pred": 0.11, "stock": 10, "days": 4}, {"name": "오뚜기)순후추100g", "cat": "양념류", "plan": 1, "pred": 0.11, "stock": 6, "days": 1}, {"name": "대상)미원맛소금250g", "cat": "양념류", "plan": 1, "pred": 0.11, "stock": 3, "days": 12}, {"name": "CJ)저당제육볶음양념470G", "cat": "소스류", "plan": 1, "pred": 0.11, "stock": 10, "days": 1}, {"name": "아침)김치볶음밥200g", "cat": "즉석밥류", "plan": 1, "pred": 0.11, "stock": 12, "days": 0}, {"name": "마이)알룰로스485g", "cat": "소스류", "plan": 1, "pred": 0.11, "stock": 17, "days": 1}, {"name": "예주)티파로스피쉬소스", "cat": "소스류", "plan": 1, "pred": 0.1, "stock": 10, "days": 1}, {"name": "샘표)밥도둑메추리장조림", "cat": "양념류", "plan": 1, "pred": 0.1, "stock": 49, "days": 0}, {"name": "CJ)갈색설탕1KG", "cat": "양념류", "plan": 1, "pred": 0.1, "stock": 10, "days": 0}, {"name": "CJ)백설남해굴소스350g", "cat": "소스류", "plan": 1, "pred": 0.1, "stock": 7, "days": 0}, {"name": "대상)저당돈까스소스240g", "cat": "소스류", "plan": 1, "pred": 0.1, "stock": 12, "days": 0}, {"name": "예주)MM라임쥬스500g", "cat": "소스류", "plan": 1, "pred": 0.1, "stock": 18, "days": 0}, {"name": "예주)친수칠리소스", "cat": "소스류", "plan": 1, "pred": 0.1, "stock": 15, "days": 3}, {"name": "샘표)밥도둑양념깻잎", "cat": "양념류", "plan": 1, "pred": 0.09, "stock": 11, "days": 0}, {"name": "사조)해표꽃소금500g", "cat": "양념류", "plan": 1, "pred": 0.09, "stock": 7, "days": 0}, {"name": "오뚜기)쇠고기스프80g", "cat": "양념류", "plan": 1, "pred": 0.09, "stock": 5, "days": 0}, {"name": "오뚜기)허니머스타드265g", "cat": "소스류", "plan": 1, "pred": 0.09, "stock": 6, "days": 0}, {"name": "대상)햇살담은진간장500ml", "cat": "장류", "plan": 1, "pred": 0.09, "stock": 5, "days": 2}, {"name": "CJ)1분링멸치디포리40G", "cat": "양념류", "plan": 1, "pred": 0.09, "stock": 20, "days": 0}, {"name": "한생)내리찬고춧가루110g", "cat": "양념류", "plan": 1, "pred": 0.09, "stock": 5, "days": 1}, {"name": "마이)땅콩버터스틱크리미", "cat": "소스류", "plan": 1, "pred": 0.09, "stock": 104, "days": 0}, {"name": "CJ)햇반12곡밥210g", "cat": "즉석밥류", "plan": 1, "pred": 0.08, "stock": 15, "days": 0}, {"name": "마이)신땅콩버터스틱솔티", "cat": "소스류", "plan": 1, "pred": 0.08, "stock": 110, "days": 0}, {"name": "CJ)햇반현미쌀밥210g", "cat": "즉석밥류", "plan": 1, "pred": 0.07, "stock": 15, "days": 0}, {"name": "대상)청정원꽃게참치액560", "cat": "소스류", "plan": 1, "pred": 0.07, "stock": 7, "days": 0}, {"name": "샘표)연두진275ml", "cat": "소스류", "plan": 1, "pred": 0.06, "stock": 34, "days": 0}, {"name": "오뚜기)맛있는큰밥4입", "cat": "즉석밥류", "plan": 1, "pred": 0.06, "stock": 12, "days": 0}, {"name": "오뚜기)맛있는흑미밥210g", "cat": "즉석밥류", "plan": 1, "pred": 0.06, "stock": 9, "days": 0}, {"name": "오뚜기)맛있는오곡밥210g", "cat": "즉석밥류", "plan": 1, "pred": 0.06, "stock": 16, "days": 0}, {"name": "삼양)불닭마요네즈250g", "cat": "소스류", "plan": 1, "pred": 0.06, "stock": 0, "days": 0}, {"name": "스미)바나나봉1kg(행사)", "cat": "과일", "plan": 2, "pred": 6.4, "stock": 143, "days": 8}, {"name": "썬골드키위박스(1개)", "cat": "과일", "plan": 2, "pred": 6.29, "stock": 0, "days": 10}, {"name": "흥생)품절란30입", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 5.59, "stock": 59, "days": 14}, {"name": "스미)마운틴바나나2입", "cat": "과일", "plan": 2, "pred": 4.74, "stock": 9, "days": 12}, {"name": "스미)바나나봉1kg(12P)", "cat": "과일", "plan": 2, "pred": 4.0, "stock": 0, "days": 14}, {"name": "행복)참한일판란30입", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 3.7, "stock": 0, "days": 2}, {"name": "풀)동물복지목초란15구", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 2.81, "stock": 12, "days": 11}, {"name": "데일리)딱딱한복숭아4입", "cat": "과일", "plan": 2, "pred": 1.77, "stock": 6, "days": 10}, {"name": "행복)모닝참한특란4입", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 1.71, "stock": 4, "days": 4}, {"name": "데일리)자두450g", "cat": "과일", "plan": 2, "pred": 1.7, "stock": 10, "days": 0}, {"name": "다향)한돈삼겹살300g_냉장", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 1.47, "stock": 18, "days": 3}, {"name": "미트)간장삼겹살구이350g", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 1.43, "stock": 7, "days": 6}, {"name": "데일리)말랑한복숭아4입", "cat": "과일", "plan": 2, "pred": 1.29, "stock": 8, "days": 9}, {"name": "미트)냉동대패삼겹살800g", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 1.22, "stock": 0, "days": 10}, {"name": "행복)모닝참한생란1구", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 1.22, "stock": 10, "days": 0}, {"name": "CJ)비비고고기왕교자315g", "cat": "냉동만두", "plan": 2, "pred": 1.06, "stock": 14, "days": 7}, {"name": "득템)계란15입", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 1.06, "stock": 18, "days": 8}, {"name": "데일리)황도랑백도랑400g", "cat": "과일", "plan": 2, "pred": 1.0, "stock": 11, "days": 3}, {"name": "데일리)실속토마토(6입)", "cat": "과일", "plan": 2, "pred": 0.97, "stock": 5, "days": 10}, {"name": "득템)순살치킨매콤한맛", "cat": "냉동간편식", "plan": 2, "pred": 0.95, "stock": 46, "days": 5}, {"name": "득템)찐만두김치6입", "cat": "냉동만두", "plan": 2, "pred": 0.72, "stock": 25, "days": 7}, {"name": "득템)순살치킨오리지널", "cat": "냉동간편식", "plan": 2, "pred": 0.7, "stock": 6, "days": 7}, {"name": "캐나다)보리삼겹살500g", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.67, "stock": 4, "days": 8}, {"name": "CJ)비비고김치왕교자315g", "cat": "냉동만두", "plan": 2, "pred": 0.66, "stock": 9, "days": 5}, {"name": "오뚜기)우노피자페퍼로니", "cat": "냉동간편식", "plan": 2, "pred": 0.64, "stock": 12, "days": 5}, {"name": "동원)딤섬샤오롱바오6입", "cat": "냉동만두", "plan": 2, "pred": 0.6, "stock": 10, "days": 4}, {"name": "오뚜기)골든후라이드치킨", "cat": "냉동간편식", "plan": 2, "pred": 0.59, "stock": 6, "days": 4}, {"name": "CJ)비비고군만두315g", "cat": "냉동만두", "plan": 2, "pred": 0.59, "stock": 7, "days": 0}, {"name": "득템)뉴피자고르곤졸라", "cat": "냉동간편식", "plan": 2, "pred": 0.57, "stock": 10, "days": 1}, {"name": "오뚜기)우노피자불고기", "cat": "냉동간편식", "plan": 2, "pred": 0.56, "stock": 15, "days": 3}, {"name": "다향)한돈목살300g_냉장", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.55, "stock": 17, "days": 2}, {"name": "데일리)실속천도복숭아800", "cat": "과일", "plan": 2, "pred": 0.54, "stock": 0, "days": 2}, {"name": "오뚜기)순후추찐만두180g", "cat": "냉동만두", "plan": 2, "pred": 0.53, "stock": 12, "days": 4}, {"name": "오뚜기)순후추닭강정180g", "cat": "냉동간편식", "plan": 2, "pred": 0.52, "stock": 15, "days": 2}, {"name": "득템)찐만두고기6입", "cat": "냉동만두", "plan": 2, "pred": 0.5, "stock": 25, "days": 5}, {"name": "득템)찐만두청양6입", "cat": "냉동만두", "plan": 2, "pred": 0.5, "stock": 18, "days": 6}, {"name": "씨엔)하우스수박6kg", "cat": "과일", "plan": 2, "pred": 0.5, "stock": 0, "days": 8}, {"name": "득템)피자콰트로치즈", "cat": "냉동간편식", "plan": 2, "pred": 0.5, "stock": 8, "days": 2}, {"name": "CJ)더건강한대란10구", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.49, "stock": 6, "days": 3}, {"name": "해성)못난이사과1.2kg(봉)", "cat": "과일", "plan": 2, "pred": 0.48, "stock": 0, "days": 5}, {"name": "PBICK)아삭깍두기만두", "cat": "냉동만두", "plan": 2, "pred": 0.47, "stock": 8, "days": 3}, {"name": "하이랜드)대패삼겹살500g", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.46, "stock": 30, "days": 5}, {"name": "CJ)닭가슴살김치만두168g", "cat": "냉동만두", "plan": 2, "pred": 0.45, "stock": 21, "days": 7}, {"name": "PBICK)더블감자베이컨피자", "cat": "냉동간편식", "plan": 2, "pred": 0.44, "stock": 13, "days": 3}, {"name": "해밀)특란6입", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.43, "stock": 8, "days": 4}, {"name": "득템)피자고구마", "cat": "냉동간편식", "plan": 2, "pred": 0.43, "stock": 11, "days": 2}, {"name": "미트)안창살구이350g", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.41, "stock": 13, "days": 8}, {"name": "동원)한입쏙만두김치6입", "cat": "냉동만두", "plan": 2, "pred": 0.4, "stock": 21, "days": 3}, {"name": "캐나다)보리목살500g", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.4, "stock": 9, "days": 1}, {"name": "오뚜기)우노피자콤비", "cat": "냉동간편식", "plan": 2, "pred": 0.39, "stock": 11, "days": 4}, {"name": "미트)고추장삼겹살구이350", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.39, "stock": 7, "days": 1}, {"name": "득템)뉴순살치킨오리지널", "cat": "냉동간편식", "plan": 2, "pred": 0.39, "stock": 10, "days": 3}, {"name": "CJ)스팸김치볶음밥220g", "cat": "냉동밥", "plan": 2, "pred": 0.35, "stock": 16, "days": 3}, {"name": "CJ)소바바소이허니240g", "cat": "냉동간편식", "plan": 2, "pred": 0.35, "stock": 12, "days": 3}, {"name": "PBICK)부추가득고기만두", "cat": "냉동만두", "plan": 2, "pred": 0.35, "stock": 9, "days": 3}, {"name": "씨엔)하우스수박7kg", "cat": "과일", "plan": 2, "pred": 0.33, "stock": 0, "days": 4}, {"name": "하이랜드)우삼겹돌돌말이", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.32, "stock": 8, "days": 4}, {"name": "데일리)실속차린참외1kg", "cat": "과일", "plan": 2, "pred": 0.31, "stock": 0, "days": 3}, {"name": "CJ)닭가슴살고기만두168g", "cat": "냉동만두", "plan": 2, "pred": 0.3, "stock": 19, "days": 4}, {"name": "CJ)도톰동그랑땡425g*2", "cat": "냉동간편식", "plan": 2, "pred": 0.29, "stock": 0, "days": 3}, {"name": "CJ)고메샤오롱바오141g", "cat": "냉동만두", "plan": 2, "pred": 0.27, "stock": 16, "days": 2}, {"name": "면사랑)까르보크림우동", "cat": "냉동면", "plan": 2, "pred": 0.27, "stock": 16, "days": 1}, {"name": "하림)맥시칸크리스피순살", "cat": "냉동간편식", "plan": 2, "pred": 0.27, "stock": 10, "days": 2}, {"name": " 세양)1등급신선특란낱개", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.26, "stock": 0, "days": 4}, {"name": "오뚜기)참깨찐만두180g", "cat": "냉동만두", "plan": 2, "pred": 0.26, "stock": 7, "days": 3}, {"name": "CJ)소바바마쏘킥240g", "cat": "냉동간편식", "plan": 2, "pred": 0.26, "stock": 10, "days": 3}, {"name": "하이)대패고추장불고기340", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.26, "stock": 4, "days": 2}, {"name": "오뚜기)갈비산적400g*2", "cat": "냉동간편식", "plan": 2, "pred": 0.25, "stock": 0, "days": 3}, {"name": "데일리)하우스감귤500g", "cat": "과일", "plan": 2, "pred": 0.25, "stock": 13, "days": 3}, {"name": "H&B)블루베리(미국)125g", "cat": "과일", "plan": 2, "pred": 0.24, "stock": 3, "days": 2}, {"name": "득템)볶음밥김치", "cat": "냉동밥", "plan": 2, "pred": 0.23, "stock": 34, "days": 2}, {"name": "대상)안주야불막창160g", "cat": "냉동간편식", "plan": 2, "pred": 0.22, "stock": 15, "days": 1}, {"name": "CJ)소바바레드핫240g", "cat": "냉동간편식", "plan": 2, "pred": 0.22, "stock": 10, "days": 3}, {"name": "CJ)뉴비비고고기찐만두6입", "cat": "냉동만두", "plan": 2, "pred": 0.22, "stock": 3, "days": 4}, {"name": "PBICK)우삼겹깍두기볶음밥", "cat": "냉동밥", "plan": 2, "pred": 0.22, "stock": 20, "days": 1}, {"name": "오뚜기)진라면볶음밥230g", "cat": "냉동밥", "plan": 2, "pred": 0.21, "stock": 5, "days": 1}, {"name": "오뚜기)XO교자고기324g", "cat": "냉동만두", "plan": 2, "pred": 0.21, "stock": 15, "days": 1}, {"name": "동원)한입쏙만두고기6입", "cat": "냉동만두", "plan": 2, "pred": 0.21, "stock": 21, "days": 3}, {"name": "사세)버팔로윙봉", "cat": "냉동간편식", "plan": 2, "pred": 0.21, "stock": 15, "days": 2}, {"name": "해성)유명산지수박8kg", "cat": "과일", "plan": 2, "pred": 0.21, "stock": 1, "days": 0}, {"name": "CJ)고메모짜돈카츠450g", "cat": "냉동간편식", "plan": 2, "pred": 0.2, "stock": 5, "days": 7}, {"name": "CJ)비비고찰보리만두300g", "cat": "냉동만두", "plan": 2, "pred": 0.19, "stock": 5, "days": 3}, {"name": "데일리)자두300g", "cat": "과일", "plan": 2, "pred": 0.19, "stock": 7, "days": 0}, {"name": "오뚜기)모짜소떡핫도그", "cat": "냉동간편식", "plan": 2, "pred": 0.18, "stock": 21, "days": 0}, {"name": "오뚜기)새우볶음밥230g", "cat": "냉동밥", "plan": 2, "pred": 0.18, "stock": 9, "days": 2}, {"name": "CJ)고메새우하가우135g", "cat": "냉동만두", "plan": 2, "pred": 0.18, "stock": 16, "days": 3}, {"name": "해성)블루베리100g", "cat": "과일", "plan": 2, "pred": 0.18, "stock": 0, "days": 3}, {"name": "CJ)비비고고기찐만두6입", "cat": "냉동만두", "plan": 2, "pred": 0.17, "stock": 5, "days": 1}, {"name": "오뚜기)리얼바삭빅핫도그", "cat": "냉동간편식", "plan": 2, "pred": 0.17, "stock": 15, "days": 1}, {"name": "CJ)비비고찐만두불고기4입", "cat": "냉동만두", "plan": 2, "pred": 0.17, "stock": 4, "days": 1}, {"name": "제스프리)썬골드키위4입", "cat": "과일", "plan": 2, "pred": 0.16, "stock": 1, "days": 4}, {"name": "해태)샤오롱고향만두180g", "cat": "냉동만두", "plan": 2, "pred": 0.16, "stock": 25, "days": 1}, {"name": "CJ)소바바양념치킨240g", "cat": "냉동간편식", "plan": 2, "pred": 0.16, "stock": 15, "days": 3}, {"name": "하이랜드)구이용목살500g", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.16, "stock": 15, "days": 2}, {"name": "CJ)청양고기만두4입", "cat": "냉동만두", "plan": 2, "pred": 0.15, "stock": 24, "days": 0}, {"name": "해태)고향고기김치번들", "cat": "냉동만두", "plan": 2, "pred": 0.15, "stock": 13, "days": 6}, {"name": "해태)고향만두485g*2", "cat": "냉동만두", "plan": 2, "pred": 0.15, "stock": 29, "days": 1}, {"name": "오뚜기)오늘의만두300g", "cat": "냉동만두", "plan": 2, "pred": 0.15, "stock": 8, "days": 1}, {"name": "득템)볶음밥김치3입", "cat": "냉동밥", "plan": 2, "pred": 0.15, "stock": 16, "days": 5}, {"name": "하이랜드)구이용삼겹살500", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.15, "stock": 6, "days": 2}, {"name": "제스프리)썬골드키위52과", "cat": "과일", "plan": 2, "pred": 0.14, "stock": 25, "days": 4}, {"name": "대상)안주야무뼈닭발160g", "cat": "냉동간편식", "plan": 2, "pred": 0.14, "stock": 15, "days": 1}, {"name": "풀무원)생물만두250g*3", "cat": "냉동만두", "plan": 2, "pred": 0.14, "stock": 11, "days": 2}, {"name": "데일리)체리200g(미국)", "cat": "과일", "plan": 2, "pred": 0.14, "stock": 8, "days": 1}, {"name": "득템)냉동닭꼬치매콤4입", "cat": "냉동간편식", "plan": 2, "pred": 0.14, "stock": 1, "days": 3}, {"name": "해태)고기고향만두", "cat": "냉동만두", "plan": 2, "pred": 0.13, "stock": 15, "days": 1}, {"name": "대상)언양식불고기270g", "cat": "냉동간편식", "plan": 2, "pred": 0.13, "stock": 22, "days": 1}, {"name": "CJ)뉴육즙불고기찐만두6입", "cat": "냉동만두", "plan": 2, "pred": 0.13, "stock": 10, "days": 1}, {"name": "SP)레몬2입팩", "cat": "과일", "plan": 2, "pred": 0.13, "stock": 4, "days": 1}, {"name": "하림)맥시칸양념치킨순살", "cat": "냉동간편식", "plan": 2, "pred": 0.13, "stock": 15, "days": 2}, {"name": "오뚜기)순후추치킨180g", "cat": "냉동간편식", "plan": 2, "pred": 0.12, "stock": 14, "days": 0}, {"name": "CJ)뉴비비고청양찐만두6입", "cat": "냉동만두", "plan": 2, "pred": 0.12, "stock": 10, "days": 2}, {"name": "팜스)세척사과", "cat": "과일", "plan": 2, "pred": 0.12, "stock": 7, "days": 3}, {"name": "키친보스)갓김치만두", "cat": "냉동만두", "plan": 2, "pred": 0.11, "stock": 12, "days": 0}, {"name": "CJ)육즙불고기찐만두6입", "cat": "냉동만두", "plan": 2, "pred": 0.11, "stock": 1, "days": 1}, {"name": "면사랑)해물볶음짬뽕면", "cat": "냉동면", "plan": 2, "pred": 0.11, "stock": 16, "days": 2}, {"name": "미트)매실불고기350g", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.11, "stock": 0, "days": 0}, {"name": "CJ)진한김치만두4입", "cat": "냉동만두", "plan": 2, "pred": 0.1, "stock": 20, "days": 0}, {"name": "해태)김치고향만두", "cat": "냉동만두", "plan": 2, "pred": 0.1, "stock": 15, "days": 0}, {"name": "오뚜기)버팔로봉200g", "cat": "냉동간편식", "plan": 2, "pred": 0.1, "stock": 20, "days": 1}, {"name": "CJ)닭강정200g", "cat": "냉동간편식", "plan": 2, "pred": 0.1, "stock": 15, "days": 0}, {"name": "한우)불고기200g", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.1, "stock": 1, "days": 11}, {"name": "한우)국거리(정육)200g", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.1, "stock": 1, "days": 7}, {"name": "CJ)비비고새우왕교자315g", "cat": "냉동만두", "plan": 2, "pred": 0.09, "stock": 15, "days": 0}, {"name": "오뚜기)참치김치볶음밥230", "cat": "냉동밥", "plan": 2, "pred": 0.09, "stock": 10, "days": 0}, {"name": "대상)춘천식닭갈비800g", "cat": "냉동간편식", "plan": 2, "pred": 0.09, "stock": 6, "days": 0}, {"name": "돌)용과2입(팩)", "cat": "과일", "plan": 2, "pred": 0.09, "stock": 1, "days": 1}, {"name": "득템)피자포테이토", "cat": "냉동간편식", "plan": 2, "pred": 0.09, "stock": 2, "days": 0}, {"name": "해태)고기손만두330g", "cat": "냉동만두", "plan": 2, "pred": 0.08, "stock": 18, "days": 0}, {"name": "미트)닭다리스테이크320g", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.08, "stock": 0, "days": 6}, {"name": "득템)냉동닭꼬치데리4입", "cat": "냉동간편식", "plan": 2, "pred": 0.08, "stock": 0, "days": 0}, {"name": "해성)완숙토마토3입", "cat": "과일", "plan": 2, "pred": 0.08, "stock": 0, "days": 4}, {"name": "신세계)바질햄치즈치아바", "cat": "냉동간편식", "plan": 2, "pred": 0.07, "stock": 13, "days": 0}, {"name": "CJ)비비고새우볶음밥420g", "cat": "냉동밥", "plan": 2, "pred": 0.07, "stock": 0, "days": 0}, {"name": "CJ)고메통등심돈카츠450g", "cat": "냉동간편식", "plan": 2, "pred": 0.07, "stock": 9, "days": 12}, {"name": "오뚜기)XO새우슈마이133g", "cat": "냉동만두", "plan": 2, "pred": 0.07, "stock": 22, "days": 0}, {"name": "풀)깐메추리알유정란190G", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.07, "stock": 8, "days": 0}, {"name": "한우)다짐육200g", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.07, "stock": 0, "days": 0}, {"name": "데일리)실속신비복숭아800", "cat": "과일", "plan": 2, "pred": 0.07, "stock": 0, "days": 0}, {"name": "득템)피자고르곤졸라", "cat": "냉동간편식", "plan": 2, "pred": 0.07, "stock": 0, "days": 0}, {"name": "썬키스트오렌지(낱개)", "cat": "과일", "plan": 2, "pred": 0.06, "stock": 0, "days": 0}, {"name": "미트)앞다리제육볶음350g", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.06, "stock": 0, "days": 0}, {"name": "득템)특란10입", "cat": "1차축산물(생란,정육)", "plan": 2, "pred": 0.06, "stock": 4, "days": 0}, {"name": "씨엔)대추방토300g팩", "cat": "과일", "plan": 2, "pred": 0.06, "stock": 6, "days": 0}, {"name": "팜스)바나나2입", "cat": "과일", "plan": 2, "pred": 0.05, "stock": 0, "days": 0}, {"name": "씨엔)반값사과1kg", "cat": "과일", "plan": 2, "pred": 0.05, "stock": 0, "days": 0}, {"name": "씨엔)하우스수박5kg", "cat": "과일", "plan": 2, "pred": 0.05, "stock": 0, "days": 0}, {"name": "팜스)세척사과대", "cat": "과일", "plan": 2, "pred": 0.03, "stock": 0, "days": 0}, {"name": "스미)반값바나나", "cat": "과일", "plan": 2, "pred": 0.03, "stock": 11, "days": 0}, {"name": "씨엔)무지개방토컵200g", "cat": "과일", "plan": 2, "pred": 0.03, "stock": 1, "days": 0}, {"name": "씨엔)참외2입", "cat": "과일", "plan": 2, "pred": 0.03, "stock": 0, "days": 0}, {"name": "데일리)스테비아망고방토", "cat": "과일", "plan": 2, "pred": 0.03, "stock": 0, "days": 0}, {"name": "데일리)스테비아방토300g", "cat": "과일", "plan": 2, "pred": 0.03, "stock": 0, "days": 0}, {"name": "해성)대추방토500g", "cat": "과일", "plan": 2, "pred": 0.03, "stock": 0, "days": 0}, {"name": "해성)대추방울토마토900g", "cat": "과일", "plan": 2, "pred": 0.03, "stock": 0, "days": 0}, {"name": "해성)달콤성주참외1kg(특)", "cat": "과일", "plan": 2, "pred": 0.03, "stock": 0, "days": 0}, {"name": "해성)썬키스트오렌지1.2kg", "cat": "과일", "plan": 2, "pred": 0.03, "stock": 0, "days": 0}, {"name": "H&B)만다린1kg(10입)", "cat": "과일", "plan": 2, "pred": 0.02, "stock": 0, "days": 0}, {"name": "해성)썬키스트오렌지6입", "cat": "과일", "plan": 2, "pred": 0.02, "stock": 0, "days": 0}];
+const $=s=>document.querySelector(s);
+const won=n=>Math.round(n).toLocaleString();
+let P={plan:1,unit:2500,margin:28,safety:1.2,unitq:1,exp:3,invest:30,
+       grade:"",sort:"profit",q:""};
+const EXP_DEF={1:3,2:25};
+
+function grade(d){ if(d>=8)return"C"; if(d>=1)return"B"; return"A"; }
+const GLAB={A:"미취급·부진",B:"취급·저조",C:"정상"};
+const GRANK={C:3,B:2,A:1};
+
+function calc(it){
+  const wpred=it.pred*7;                                   // 주간 예측판매
+  const u=P.unitq;
+  const qty=Math.max(u,Math.ceil(wpred*P.safety/u)*u);     // 적정수량(주간발주)
+  const cost=P.unit*(1-P.margin/100);                      // 원가
+  const wasteQ=Math.max(0,qty-wpred)*(P.exp/100);          // 폐기예상수량
+  const wasteW=wasteQ*cost;                                // 폐기손실
+  const profit=wpred*P.unit*(P.margin/100);                // 판매이익
+  const net=profit-wasteW;                                 // 주간손익
+  const wrate=qty>0?wasteQ/qty*100:0;                      // 폐기율
+  return {qty:Math.round(qty),wasteQ,wasteW,profit,net,wrate,g:grade(it.days)};
+}
+
+function reason(it,c){
+  const g=c.g, base=`최근 2주 <b>${it.days}일</b> 판매·일평균 <b>${it.pred.toFixed(1)}개</b>`;
+  if(g==="C") return `${base}로 회전 양호(정상군). 적정수량 <b>${c.qty}개</b> 발주 시 주간손익 <b>${won(c.net)}원</b>, 폐기위험 <b>${c.wrate.toFixed(0)}%</b>로 안정적입니다.`;
+  if(g==="B") return `${base}로 회전 저조(B군). 적정수량 <b>${c.qty}개</b> 소량 운영 시 폐기 ${c.wasteQ.toFixed(1)}개(<b>${c.wrate.toFixed(0)}%</b>) 예상, 주간손익 <b>${won(c.net)}원</b>. 진열 위치 개선 병행 권장.`;
+  return `${base}로 부진(A군). 재도입/시험 발주는 최소단위 <b>${c.qty}개</b>부터, 폐기위험 <b>${c.wrate.toFixed(0)}%</b> 관리가 필요합니다.`;
+}
+
+function render(){
+  const list=DATA.filter(x=>x.plan===P.plan).map(it=>({it,c:calc(it)}));
+  // summary (해당 안 전체)
+  let need=list.filter(x=>x.c.net>0).length;
+  let sumNet=list.reduce((s,x)=>s+x.c.net,0);
+  let avgW=list.length?list.reduce((s,x)=>s+x.c.wrate,0)/list.length:0;
+  const sm=$("#summary");
+  const depr = P.plan===2 ? P.invest*10000/156 : 0;      // 주간 감가(3년)
+  const payback = (P.plan===2 && sumNet>0) ? (P.invest*10000/sumNet) : 0;
+  let cards4=[
+    ["추천 품목","acc",`${list.length}<small>종</small>`],
+    ["흑자 품목","pos",`${need}<small>종</small>`],
+    ["주간 예상손익 합계",sumNet>=0?"pos":"neg",`${won(sumNet)}<small>원</small>`],
+    P.plan===2 ? ["집기 투자회수", payback>0?"acc":"neg", payback>0?`${payback.toFixed(0)}<small>주</small>`:`—`]
+               : ["평균 예상폐기율","acc",`${avgW.toFixed(1)}<small>%</small>`],
+  ];
+  sm.innerHTML=cards4.map(([l,c,v])=>`<div class="scard ${c}"><div class="strip"></div><div class="lab">${l}</div><div class="val mono">${v}</div></div>`).join("");
+  $("#foot2").innerHTML = P.plan===2 ? `· <b>2안</b> 순손익 = Σ손익 − 주간 집기감가(${won(depr)}원) · 투자회수(주) = 투자액 ÷ Σ주간손익` : "";
+
+  // filter+sort
+  let f=list.filter(({it,c})=>(!P.grade||c.g===P.grade)&&(!P.q||it.name.toLowerCase().includes(P.q.toLowerCase())));
+  f.sort((a,b)=>{
+    if(P.sort==="name")return a.it.name.localeCompare(b.it.name,"ko");
+    if(P.sort==="pred")return b.it.pred-a.it.pred;
+    if(P.sort==="waste")return b.c.wrate-a.c.wrate;
+    return b.c.net-a.c.net;
+  });
+  $("#count").textContent=`${f.length}개 상품 표시 · ${P.plan}안 ${P.plan===1?'비축형·무투자':'모듈형·투자'}`;
+  const wrap=$("#cards");wrap.innerHTML="";const fr=document.createDocumentFragment();
+  f.forEach(({it,c})=>{
+    const el=document.createElement("div");el.className="card g"+c.g;
+    el.innerHTML=
+      `<div class="top"><div><div class="nm">${esc(it.name)}</div><div class="ct">${esc(it.cat)}</div></div>`+
+      `<div class="grade g${c.g}">${c.g}<small>${GLAB[c.g]}</small></div></div>`+
+      `<div class="metrics">`+
+        `<div class="metric"><div class="k">적정수량/주</div><div class="v">${c.qty}<small>개</small></div></div>`+
+        `<div class="metric"><div class="k">폐기예상</div><div class="v">${c.wasteQ.toFixed(1)}<small>개</small></div></div>`+
+        `<div class="metric profit"><div class="k">주간손익</div><div class="v ${c.net>=0?'pos':'neg'}">${won(c.net)}<small>원</small></div></div>`+
+      `</div>`+
+      `<div class="reason">${reason(it,c)}</div>`;
+    fr.appendChild(el);
+  });
+  wrap.appendChild(fr);
+}
+function esc(s){return s.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+
+// tabs
+$("#tabs").onclick=e=>{const t=e.target.closest(".tab");if(!t)return;
+  P.plan=+t.dataset.p;
+  [...e.currentTarget.children].forEach(c=>c.setAttribute("aria-selected",c===t));
+  P.exp=EXP_DEF[P.plan];$("#exp").value=P.exp;$("#v-exp").textContent=P.exp;
+  $("#investwrap").style.display=P.plan===2?"":"none";
+  render();};
+$("#investwrap").style.display="none";
+$("#v-exp").textContent=P.exp;
+
+// params
+const bind=(id,key,fmt)=>{$("#"+id).oninput=e=>{P[key]=+e.target.value;
+  $("#v-"+id).textContent=fmt?fmt(P[key]):P[key];render();};};
+bind("unit","unit",v=>v.toLocaleString());
+bind("margin","margin");
+bind("safety","safety",v=>v.toFixed(2));
+bind("unitq","unitq");
+bind("exp","exp");
+bind("invest","invest");
+$("#grade").onchange=e=>{P.grade=e.target.value;render();};
+$("#sort").onchange=e=>{P.sort=e.target.value;render();};
+$("#q").oninput=e=>{P.q=e.target.value;render();};
+
+// store code (single-store prototype)
+$("#store").oninput=e=>{const v=e.target.value.trim();
+  $("#storenm").textContent = v==="54885"?"탑동중앙점":"예시 점포("+ (v||"—") +")";};
+
+const root=document.documentElement;
+$("#theme").onclick=()=>{const cur=root.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
+  root.setAttribute("data-theme",cur==="dark"?"light":"dark");};
+render();
+</script>

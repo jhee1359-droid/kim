@@ -2,3 +2,4 @@ best_model.pkl
 *.pkl
 발주추천_결과.xlsx
 *.out
+tool_data.json

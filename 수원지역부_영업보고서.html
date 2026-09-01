@@ -778,7 +778,7 @@ function renderDelDonut(){
   return html;
 }
 /* ===== 추석 예약발주 (1회성) ===== */
-function chWon(v){ v=v||0; return v>=1e8 ? (v/1e8).toFixed(2)+"억" : Math.round(v/1e4).toLocaleString()+"만"; }
+function chWon(v){ v=v||0; return v>=1e8 ? (v/1e8).toFixed(2)+"억" : Math.round(v/1e3).toLocaleString()+"천원"; }
 function chYoyCls(v){ return v==null?'':(v>=100?'g':v>=90?'w':'b'); }
 function renderChuseok(){
   const C=CHUSEOK, R=C.region;
@@ -963,22 +963,22 @@ function msEok(v){ return ((v||0)/1e8).toFixed(1)+"억"; }
 function renderMisong(){
   const M=MISONG, R=M.region;
   let html=`<div class="teamnote">🗓️ <b>${M.asof}</b> · 누계미송금 <b>10,000천원 이상</b> 점포 × 대여금(채무변제기준금액)</div>`;
-  html+=`<div class="pendbanner" style="background:var(--bad-soft);border-color:var(--bad)"><span style="color:var(--bad)">⚠️</span> <div><b>미송금관리 지도 대상</b> — 시스템 특성상 <b>미송금</b>은 주차별 과다점만, <b>대여금</b>은 인출금일(${M.withdrawDate})에만 조회 가능하여 두 자료를 결합했습니다. 대여금(채무변제기준금액)이 <b>마이너스(계정 적자)</b>일수록 회수 위험이 큽니다.</div></div>`;
+  html+=`<div class="pendbanner" style="background:var(--bad-soft);border-color:var(--bad)"><span style="color:var(--bad)">⚠️</span> <div><b>미송금관리 지도 대상</b> — 시스템 특성상 <b>미송금</b>은 주차별 과다점만, <b>대여금</b>은 인출금일(${M.withdrawDate})에만 조회 가능하여 두 자료를 결합했습니다. 대여금(채무변제기준금액)이 <b>마이너스</b>일수록 회수 위험이 큽니다.</div></div>`;
   html+=`<div class="tiles">
     ${tile(R.n,"점","대상 점포 (미송금 1천만↑)","bad")}
     ${tile(msEok(R.misong),"원","누계미송금 합계","bad")}
-    ${tile(R.deficit,"점",`대여금 적자 점포 (${Math.round(R.deficit/R.n*100)}%)`,"warn")}
+    ${tile(R.deficit,"점",`대여금 위험 점포 (${Math.round(R.deficit/R.n*100)}%)`,"warn")}
     ${tile("9팀","","최다 대상팀 (14점)",null)}</div>`;
 
   // 지역부 TOP
-  html+=`<div class="sec-h"><span class="n">${curPage+1}</span><h2>미송금 상위 점포 (지역부 TOP 12)</h2><span class="hint">대여금 적자 클수록 위험</span></div>`;
+  html+=`<div class="sec-h"><span class="n">${curPage+1}</span><h2>미송금 상위 점포 (지역부 TOP 12)</h2><span class="hint">대여금 마이너스 클수록 위험</span></div>`;
   html+=`<div class="panel"><div class="tblscroll"><table><thead><tr><th>점포</th><th>팀</th><th>SC</th><th>누계미송금</th><th>전주대비</th><th>대여금</th></tr></thead><tbody>`+
     M.top.map(s=>`<tr><th>${s.nm}</th><td class="tnum" style="font-size:11px">수원${s.team}</td><td style="font-size:11px;color:var(--muted)">${s.sc||'—'}</td><td class="tnum b">${msK(s.misong)}</td><td class="tnum ${s.wow>0?'b':'g'}" style="font-size:11px">${s.wow>0?'+':''}${msK(s.wow)}</td><td class="tnum ${(s.debt||0)<0?'b':'g'}">${msK(s.debt)}</td></tr>`).join("")+
     `</tbody></table></div></div>`;
 
   // 팀별
   html+=`<div class="sec-h"><span class="n">▸</span><h3>영업팀별 대상 현황</h3><span class="hint">행 클릭 시 점포별 상세</span></div>`;
-  let tr=`<thead><tr><th>팀</th><th>대상점</th><th>누계미송금 합</th><th>대여금 적자점</th></tr></thead><tbody>`;
+  let tr=`<thead><tr><th>팀</th><th>대상점</th><th>누계미송금 합</th><th>대여금 위험점</th></tr></thead><tbody>`;
   tr+=`<tr class="sum"><th>수원지역부</th><td>${R.n}</td><td>${msK(R.misong)}</td><td>${R.deficit}</td></tr>`;
   TEAMS.forEach(t=>{const d=M.teams[t]; if(!d)return; const hl=(t===selTeam)?' class="hl-row click"':' class="click"';
     tr+=`<tr${hl} data-team="${t}"><th>수원${t}</th><td class="tnum ${d.n>=8?'b':d.n>=5?'w':''}">${d.n}</td><td class="tnum b">${msK(d.misong)}</td><td class="tnum ${d.deficit>0?'w':''}">${d.deficit}</td></tr>`;
@@ -988,18 +988,18 @@ function renderMisong(){
   // 점포 드릴다운
   if(selTeam && M.teams[selTeam]){
     const ss=M.teams[selTeam].stores;
-    html+=`<div class="sec-h"><span class="n">▸</span><h3>수원${selTeam} 미송금 대상 점포 (${ss.length}점)</h3><span class="hint">미송금 높은 순 · 대여금 적자 위험</span></div>`;
+    html+=`<div class="sec-h"><span class="n">▸</span><h3>수원${selTeam} 미송금 대상 점포 (${ss.length}점)</h3><span class="hint">미송금 높은 순 · 대여금 마이너스 위험</span></div>`;
     html+=`<div class="panel"><div class="tblscroll"><table><thead><tr><th>점포</th><th>SC</th><th>형태</th><th>누계미송금</th><th>전주대비</th><th>대여금</th><th>위험</th></tr></thead><tbody>`+
       ss.map(s=>{const risk=(s.misong>=20000000)&&((s.debt||0)<=-10000000);
-        return `<tr><th>${s.nm}</th><td style="font-size:11px;color:var(--muted)">${s.sc||'—'}</td><td style="font-size:11px;color:var(--muted)">${s.form||'—'}</td><td class="tnum b">${msK(s.misong)}</td><td class="tnum ${s.wow>0?'b':'g'}" style="font-size:11px">${s.wow>0?'+':''}${msK(s.wow)}</td><td class="tnum ${(s.debt||0)<0?'b':'g'}">${msK(s.debt)}</td><td class="tnum">${risk?'<span class="b">⚠ 高</span>':((s.debt||0)<0?'<span class="w">적자</span>':'—')}</td></tr>`;}).join("")+
+        return `<tr><th>${s.nm}</th><td style="font-size:11px;color:var(--muted)">${s.sc||'—'}</td><td style="font-size:11px;color:var(--muted)">${s.form||'—'}</td><td class="tnum b">${msK(s.misong)}</td><td class="tnum ${s.wow>0?'b':'g'}" style="font-size:11px">${s.wow>0?'+':''}${msK(s.wow)}</td><td class="tnum ${(s.debt||0)<0?'b':'g'}">${msK(s.debt)}</td><td class="tnum">${risk?'<span class="b">⚠ 高</span>':((s.debt||0)<0?'<span class="w">위험</span>':'—')}</td></tr>`;}).join("")+
       `</tbody></table></div></div>`;
   }
 
   const rk=Object.entries(M.teams).sort((a,b)=>b[1].misong-a[1].misong);
   html+=insight("대여금·미송금 관리 해석",[
-    `수원 미송금 1천만↑ 점포 <b class="b">${R.n}점</b>, 누계미송금 <b class="b">${msEok(R.misong)}원</b>. 이 중 <b class="b">${R.deficit}점(${Math.round(R.deficit/R.n*100)}%)</b>이 대여금(채무변제기준금액) 적자로 회수 위험.`,
+    `수원 미송금 1천만↑ 점포 <b class="b">${R.n}점</b>, 누계미송금 <b class="b">${msEok(R.misong)}원</b>. 이 중 <b class="b">${R.deficit}점(${Math.round(R.deficit/R.n*100)}%)</b>이 대여금(채무변제기준금액) 마이너스로 회수 위험.`,
     `팀별 대상 최다 <b class="b">수원${rk[0][0]} ${rk[0][1].n}점</b>(미송금 ${msK(rk[0][1].misong)}). 남양시티·수원화서영광·화성리더스 등 미송금 3~4천만↑ 점포 우선 지도.`,
-    `➡ 팀을 눌러 점포별 <b>미송금 발생 사유 파악</b> 및 송금 정상화 지도. 대여금 적자 큰 점포는 채무변제 계획 병행 필요.`,
+    `➡ 팀을 눌러 점포별 <b>미송금 발생 사유 파악</b> 및 송금 정상화 지도. 대여금 마이너스 큰 점포는 채무변제 계획 병행 필요.`,
   ]);
   return html;
 }

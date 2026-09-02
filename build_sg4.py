@@ -53,8 +53,9 @@ HTML=r'''<title>SG 신규 개점 추천</title>
 const D=__DATA__;const $=s=>document.querySelector(s);const won=n=>Math.round(n).toLocaleString();
 const S=D.stores,PR=D.prods;
 const rotBy=S.map(()=>({}));D.links.forEach(([s,p,r])=>{rotBy[s][p]=r;});
+const LOCMAP={"01":"독신자주택","02":"가족주택","03":"산업지대","04":"오피스가","05":"로드사이드","06":"유흥가","07":"주택근생","08":"주경야유","09":"병원","10":"대학","11":"주유소","12":"터미널","13":"휴게소","14":"관광지","15":"리조트","16":"경기장","17":"지하철","18":"기타","19":"빌딩구내","20":"구내공장","21":"공원"};
 let P={plan:1,g:"all",sort:"profit",q:"",adj:20,unitq:1,invest:30,area:150,loc:""};
-$("#loc").innerHTML='<option value="">전체 입지</option>'+[...new Set(S.map(s=>s.loc))].sort().map(l=>`<option value="${l}">입지 ${l}</option>`).join("");
+$("#loc").innerHTML='<option value="">전체 입지</option>'+[...new Set(S.map(s=>s.loc))].sort().map(l=>`<option value="${l}">${LOCMAP[l]||("입지 "+l)}</option>`).join("");
 
 function simStores(area,loc){
   let pool=S.map((s,i)=>({i,s}));
@@ -87,7 +88,7 @@ $("#chips").innerHTML=CHIPS.map(([k,l,c])=>`<button class="chip ${c}" data-g="${
 function render(){
   P.area=+$("#area").value||150;P.loc=$("#loc").value;
   const sims=simStores(P.area,P.loc);
-  $("#matched").innerHTML=`유사 기존점 <b>${sims.length}개</b> (면적 ${P.area}㎡·입지 ${P.loc||'전체'} 근접): `+sims.map(i=>`${S[i].name}(${S[i].area}㎡·입지${S[i].loc})`).join(" · ");
+  $("#matched").innerHTML=`유사 기존점 <b>${sims.length}개</b> (면적 ${P.area}㎡·${P.loc?LOCMAP[P.loc]:"전체 입지"} 근접): `+sims.map(i=>`${S[i].name}(${S[i].area}㎡·${LOCMAP[S[i].loc]||S[i].loc})`).join(" · ");
   const list=build(sims);
   const net=list.reduce((a,r)=>a+r.net,0), totQty=list.reduce((a,r)=>a+r.qty,0);
   const hi=list.filter(r=>r.gkey==="S").length;

@@ -5,4 +5,9 @@ best_model.pkl
 tool_data.json
 order_tool_data.json
 sg_tool_data.json
+sg2_data.json
 pdf_text.txt
+sgdata/
+*.7z
+*.parquet
+agg_final.csv

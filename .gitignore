@@ -11,3 +11,4 @@ sgdata/
 *.7z
 *.parquet
 agg_final.csv
+sg3_data.json

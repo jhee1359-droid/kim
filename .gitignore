@@ -12,3 +12,5 @@ sgdata/
 *.parquet
 agg_final.csv
 sg3_data.json
+pptwork/
+*.pptx

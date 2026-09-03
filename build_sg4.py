@@ -7,13 +7,13 @@ import importlib.util,types
 src=open("build_sg3.py").read()
 CSS=src.split("CSS=r'''",1)[1].split("'''",1)[0]
 
-HTML=r'''<title>SG 신규 개점 추천</title>
+HTML=r'''<title>스마트그로서리 신규 개점 추천</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@500;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>__CSS__</style>
 <div class="wrap">
   <div class="htop">
-    <div><div class="eyebrow">현장부서 AI · 2권역 · SG 신규 개점</div><h1>SG 신규 개점 추천</h1>
+    <div><div class="eyebrow">현장부서 AI · 2권역 · 스마트그로서리 신규 개점</div><h1>스마트그로서리 신규 개점 추천</h1>
     <p class="sub"><b>매장면적·입지유형</b>만 입력하면, 면적·입지가 비슷한 기존점들이 실제로 파는 상품으로 1안·2안 <b>초도 발주안(무엇을·몇 개·왜)</b>을 제안합니다.</p></div>
     <button class="themebtn" id="theme">◐ 테마</button>
   </div>
